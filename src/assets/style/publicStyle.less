@@ -1,0 +1,81 @@
+
+@import './publicVar.less';
+.mb_10{margin-bottom:10px}
+.mb_20{margin-bottom:20px;}
+button{
+    cursor:pointer
+}
+*{
+    padding:0;margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Liberation Sans","PingFang SC","Microsoft YaHei","Hiragino Sans GB","Wenquanyi Micro Hei","WenQuanYi Zen Hei","ST Heiti",SimHei,SimSun,"WenQuanYi Zen Hei Sharp",sans-serif;
+    font-size:12px;
+}
+img{
+    border:0;
+}
+div{
+    box-sizing: border-box;
+}
+li{
+    list-style:none;
+}
+[class*=clear]{
+    &::after{
+        display:table;
+        content:'';
+        clear:both;
+    }
+}
+input.ICGeneral{
+    box-sizing: border-box;
+    outline: none;
+    height:40px;
+    line-height:40px;
+    padding:5px;
+    border:2px solid #999;
+    width:100%;
+    color:#aaa;
+    &.small{
+        height:30px;
+        line-height:30px;
+        width:160px;
+    }
+}
+.text-center{
+    text-align: center;
+}
+button.ICGeneral{
+    outline: none;
+    border:@themecolor 2px solid;
+    background-color:@themecolor;
+    color:#fff;
+    padding:0 20px;
+
+    height:30px;
+    line-height:30px;
+    &:hover{
+        border-color:#c3c3c3;
+    }
+    &.big{
+        height:40px;
+        line-height:40px;
+        width:100%;
+    }
+}
+.flex-box{
+    height:100%;
+    display:flex;
+    &.vertical-center{
+        align-items: center;
+        
+    }
+    &.align-right{
+        flex-direction: row-reverse;
+    }
+    &.align-left{
+        flex-direction: row;
+    }
+}
+.per50{
+    width:49.9%;
+}
