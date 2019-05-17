@@ -25,18 +25,27 @@ router.post('/getNewestInsets',(req,res)=>{
             if(error){
                 throw error
             }
-            //res.send(result)
             if(result){
 
                 responseClient(res,200,1,'success',result)
             }else{
                 responseClient(res,400,1,'faild',{})
             }
-            
         })
     })
 })
 
+route.post('/getHomeInsets',(req,res)=>{
+    //判断一下是否登录先
+    let {id} = req.body; 
+    MongoClient.connect(dbUrl,{useNewUrlParser:true},(err,db)=>{
+        if(err) throw err;
+        let dbi = db.db("InsetCollection");
+        let subscribeids = dbi.collection('users').findOne({"_id":id},{projection:{subscribeuserIds:1}});
+        console.log(subscribeids);
 
+        responseClient(res,200,1,'success','jiade')
+    })
+})
 
 module.exports = router;
