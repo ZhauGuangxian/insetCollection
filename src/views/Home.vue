@@ -99,30 +99,26 @@ export default {
         defaultProps: {
           children: 'children',
           label: 'label'
-        },
-        
-        subscribesNewList:[
-          
-        ],
-        
+        }
       };
   },
 
   created(){
-    for(let i=1;i<=6;i++){
-      this.subscribesNewList.push({
-        img:'https://user-gold-cdn.xitu.io/2019/4/22/16a459d1c971fc3b?imageView2/0/w/1280/h/960/format/webp/ignore-error/1',name:`关注的新作品${i}`,_id:`${i}sa1`
-      })
-    }
+    
   },
   mounted(){
-    let getNewest =async function(){
+    let getNewest =async ()=>{
       let result = await fetchPost('./api/inset/getNewestInsets');
-      console.log(result);
+      
+      //this.subscribesNewList = result.data
+      this.$store.dispatch("get_home_subscribe_inset",result.data)
     }
     getNewest();
   },
   computed:{
+    subscribesNewList(){
+      return this.$store.state.inset.subscribeInsetsHome
+    },
     isLogin(){
       return this.$store.state.login.loginState;
     },

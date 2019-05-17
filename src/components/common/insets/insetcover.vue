@@ -1,6 +1,6 @@
 <template>
     <div v-incursor class="insetCover" :class="{'normal':!underGrid}" :style="{'width':!underGrid && width,'height':!underGrid && height}">
-        <img :src="insetData.img" :alt="insetData.name" :title="insetData.name" class="coverimg">
+        <img :src="insetData.insetUrl" :alt="insetData.name" :title="insetData.name" class="coverimg">
         <div class="bottomWrapper">
             <p>{{insetData.name}}</p>
         </div>
