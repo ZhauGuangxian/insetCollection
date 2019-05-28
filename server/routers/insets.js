@@ -5,6 +5,7 @@ const config = require('../config/config');
 const dbUrl = `mongodb://localhost:${config.dbPort}/`
 
 const responseClient = require('../util/util.js').responseClient;
+const ObjectId = require('mongodb').ObjectID;
 
 router.post('/getNewestInsets',(req,res)=>{
     
@@ -34,17 +35,37 @@ router.post('/getNewestInsets',(req,res)=>{
         })
     })
 })
+router.all('/getMyById',(req,res)=>{
+    let id = "5cbebeb8e472d7e69d21eaf5";;
+    MongoClient.connect(dbUrl,{useNewUrlParser:true},(err,db)=>{
+        let dbi = db.db("InsetCollection");
 
-route.post('/getHomeInsets',(req,res)=>{
+        dbi.collection('users').findOne({_id:ObjectId(id)},{},(error,result)=>{
+            console.log(result)
+            db.close();
+            responseClient(res,200,1,'success',result)
+        })
+    })
+})
+router.post('/getHomeInsets',(req,res)=>{
     //判断一下是否登录先
-    let {id} = req.body; 
+    let id = "5cbebeb8e472d7e69d21eaf5";
+    let _id =  new ObjectId(id);
+
+    
     MongoClient.connect(dbUrl,{useNewUrlParser:true},(err,db)=>{
         if(err) throw err;
         let dbi = db.db("InsetCollection");
-        let subscribeids = dbi.collection('users').findOne({"_id":id},{projection:{subscribeuserIds:1}});
+        let subscribeids;
+        //,{projection:{subscribeuserIds:1}}
+        dbi.collection('insets').find({author:_id}).toArray((error,result)=>{
+            console.log(error);
+            subscribeids = result;
+            db.close();
+        });
         console.log(subscribeids);
 
-        responseClient(res,200,1,'success','jiade')
+        responseClient(res,200,1,'success',subscribeids)
     })
 })
 

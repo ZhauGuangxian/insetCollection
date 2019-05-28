@@ -111,9 +111,17 @@ export default {
       let result = await fetchPost('./api/inset/getNewestInsets');
       
       //this.subscribesNewList = result.data
-      this.$store.dispatch("get_home_subscribe_inset",result.data)
+      this.$store.dispatch("get_home_subscribe_inset",result.data);
+
+      
+    }
+    let getSubscribeNewest = async()=>{
+        let result = await fetchPost('./api/inset/getMyById');
+
+        console.log(result);
     }
     getNewest();
+    getSubscribeNewest();
   },
   computed:{
     subscribesNewList(){
