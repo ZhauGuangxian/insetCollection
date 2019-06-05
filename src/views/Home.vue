@@ -27,12 +27,24 @@
           <div class="recomends">
             <el-button type="primary" @click="handleDialog()">button</el-button>
           </div>
-          <div class="subscribes">
-            
-              <InsetCover v-for="subsitem in subscribesNewList" :insetData="subsitem" :key="subsitem._id" :underGrid="true"></InsetCover>
-            
+          <div class="subscribes homePart">
+            <div class="head">
+              大家最新的作品
+            </div>
+            <div class="container">
+
+              <InsetCover v-for="subsitem in totalNewestList" :insetData="subsitem" :key="subsitem._id" :underGrid="true"></InsetCover>
+            </div>
           </div>
-          <div class="newCommits"></div>
+          <div class="newCommits homePart">
+            <div class="head">
+              关注的人最新作品
+            </div>
+              <div class="container">
+
+                <InsetCover v-for="subsitem in subscribesNewList" :insetData="subsitem" :key="subsitem._id" :underGrid="true"></InsetCover>
+              </div>
+          </div>
         </div>
         <div class="left2 rankin">
           <el-upload
@@ -111,14 +123,14 @@ export default {
       let result = await fetchPost('./api/inset/getNewestInsets');
       
       //this.subscribesNewList = result.data
-      this.$store.dispatch("get_home_subscribe_inset",result.data);
+      this.$store.dispatch("get_home_newest_inset",result.data);
 
       
     }
     let getSubscribeNewest = async()=>{
-        let result = await fetchPost('./api/inset/getMyById');
-
-        console.log(result);
+        let result = await fetchPost('./api/inset/getSubsNewest');
+        this.$store.dispatch("get_home_subscribe_inset",result.data)
+        
     }
     getNewest();
     getSubscribeNewest();
@@ -132,6 +144,9 @@ export default {
     },
     userData(){
       return this.$store.state.login.userData || {}
+    },
+    totalNewestList(){
+      return this.$store.state.inset.newestInsetsHome
     }
   },
   methods:{
@@ -216,11 +231,23 @@ export default {
       .center{
         
         padding:20px;
-        .subscribes{
-          display:grid;
-          grid-template-columns:1fr 1fr 1fr;
-          grid-template-rows:200px 200px;
-          grid-gap: 10px 10px 
+        .homePart{
+
+          margin-bottom:20px;
+          .head{
+            line-height:40px;
+            height:40px;
+            font-size:14px;
+            color:#999;
+            text-align: left;
+          }
+          .container{
+
+            display:grid;
+            grid-template-columns:1fr 1fr 1fr;
+            grid-template-rows:200px 200px;
+            grid-gap: 10px 10px 
+          }
         }
       }
     }

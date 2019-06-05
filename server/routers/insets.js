@@ -58,7 +58,7 @@ router.post('/getNewestInsets',(req,res)=>{
         })*/
     })
 })
-router.all('/getMyById',(req,res)=>{
+router.all('/getSubsNewest',(req,res)=>{
     
     let id = req.decoded['_id'];
     MongoClient.connect(dbUrl,{useNewUrlParser:true},(err,db)=>{

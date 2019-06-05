@@ -1,6 +1,6 @@
 const actions = {
     get_home_newest_inset:({commit},data)=>{
-        commit('GET_HOME_NEWST_INSET',data)
+        commit('GET_HOME_NEWEST_INSET',data)
     },
     //GET_HOME_SUBSCRIBE_INSET
     //GET_HOME_RECOMMOND_INSET
