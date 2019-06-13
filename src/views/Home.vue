@@ -189,6 +189,9 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less">
   @import '../assets/style/publicStyle.less';
+  .hello{
+    overflow-y:auto
+  }
   .mainContent{
     .inside{
       width:1200px;

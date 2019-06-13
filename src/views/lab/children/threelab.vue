@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p>ThreeHome</p>
+        
         <el-button @click="cameraPM">camera</el-button>
         <div class="context" ref="ThreeContext"></div>
     </div>
@@ -37,7 +37,7 @@ export default {
         this.renderer = new THREE.WebGLRenderer();
         this.renderer.setSize( this.$refs.ThreeContext.offsetWidth, this.$refs.ThreeContext.offsetHeight );
         this.$refs.ThreeContext.appendChild(this.renderer.domElement );
-        const geometry = new THREE.BoxGeometry(10,10,10);
+        const geometry = new THREE.BoxGeometry(30,30,30);
         const edge = new THREE.EdgesGeometry(geometry);
         this.cubeline = new THREE.LineSegments(edge,new THREE.MeshBasicMaterial({color:0xffffff}));
         const mesh = new THREE.MeshNormalMaterial({
@@ -47,7 +47,7 @@ export default {
         this.scene.add(this.cube);
         this.scene.add(this.cubeline);
         //this.camera.position.z = 5;
-        this.camera.position.set( 400, 200, 0 );
+        this.camera.position.set( 100, 200, 0 );
         this.controls = new OrbitControls(this.camera,this.$refs.ThreeContext);
         this.controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
 		this.controls.dampingFactor = 0.25;
