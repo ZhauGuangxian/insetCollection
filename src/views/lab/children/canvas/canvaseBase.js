@@ -1,12 +1,16 @@
 class canvasBase{
-    constructor(){
+    constructor(node){
         this.ctx = null;
         this.canvas = null;
+        this.mountNode = node;
     }
 
-    createContext(node,id){
-        let width = node.offsetWidth;
-        let height = node.offsetHeight;
+    createContext(){
+        if(!this.mountNode){
+            return false;
+        }
+        let width = this.mountNode.offsetWidth;
+        let height = this.mountNode.offsetHeight;
         this.canvas = document.createElement('canvas');
         this.canvas.width = width;
         this.canvas.height = height;
@@ -17,6 +21,11 @@ class canvasBase{
 
         ctx.fillStyle = "rgba(0, 0, 200, 0.5)";
         ctx.fillRect (30, 30, 55, 50);
+        this.appendContext();
+    }
+    appendContext(){
+        
+        this.mountNode.appendChild(this.canvas);
     }
 }
 export default canvasBase

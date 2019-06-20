@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import InputBloom from './inputBloom/inputBloom'
+import InputBloom from './inputBloom/inputBloom.vue'
 export default {
     name:'CanvasLabHome',
     components:{
