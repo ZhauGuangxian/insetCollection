@@ -52,7 +52,7 @@ class InputBloom extends canvasBase{
         let{x,cuuuentEtc,number,originY} = obj;
         let ratio = Math.ceil(number/2);
         let xDirect = number%2 == 0?1:-1;
-        let newY = originY + getY(ratio,cuuuentEtc+1);
+        let newY = this.contextHeight - (originY + getY(ratio,cuuuentEtc+1));
         let newX = x + xDirect;
         
         obj.x = newX;
@@ -75,7 +75,7 @@ class InputBloom extends canvasBase{
     }
     drawNewWord(e){
         let value = e.target.value;
-        console.log(e);
+        
         //TODO 用e.target.到left-border的距离判断offseX，
         let code = document.createElement('code');
         code.innerHTML = value;
@@ -84,18 +84,20 @@ class InputBloom extends canvasBase{
         code.remove();
         
 
-        this.generateWordData(txtWidth);
+        this.generateWordData(txtWidth + 5);
     }
     generateWordData(offsetX){
+        let rand = Math.floor(Math.random())*6 - 3;
         let arr = [];
         for(let i=0;i<this.dotNumber;i++){
             let x = offsetX;
+            
             arr.push({
-                x,
+                x:x+rand,
                 y:this.contextHeight/2,
                 number:i+1,
                 cuuuentEtc:1,
-                originX:x,
+                originX:x+rand,
                 originY:this.contextHeight/2
             })
         }
