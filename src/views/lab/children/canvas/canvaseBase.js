@@ -24,15 +24,16 @@ class canvasBase{
         this.drawMain();
     }
     render(){
-        
+        this.ctx.clearRect(0,0,this.contextWidth,this.contextHeight);
         
     }
     drawMain(){
-        this.ctx.clearRect(0,0,this.contextWidth,this.contextHeight);
+        
+        this.render();
         window.requestAnimationFrame(this.drawMain.bind(this));
         
         
-        this.render();
+        
     }
     appendContext(){
         

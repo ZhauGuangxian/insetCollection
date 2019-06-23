@@ -1,4 +1,5 @@
 import canvasBase from '../canvaseBase.js'
+import { Footer } from 'element-ui';
 class InputBloom extends canvasBase{
     constructor(node,options){
         super(node);
@@ -7,7 +8,7 @@ class InputBloom extends canvasBase{
         this.wordsList = [];
         //{name ,x,y}
         this.renderIndex = 0;
-        this.dotNumber = dotNumber || 16;
+        this.dotNumber = dotNumber || 12;
         this.testOffset = 0;
     }
     createContext(){
@@ -20,28 +21,85 @@ class InputBloom extends canvasBase{
             this.input.style.paddingLeft = '5px';
             this.ctx.font = '12px'
         }
-        this.ctx.fillStyle = '#00a1d6';
+        this.ctx.fillStyle = '#fff';
+        this.bindEvent();
+        this.ctx.contextHeight = 500;
+        window.c = this.ctx;
     }
     render(){
         super.render();
         
-        this.ctx.fillRect(this.testOffset,0,10,10);
-        this.testOffset++;
-        if(this.testOffset == this.contextWidth){
-            this.testOffset = 0;
+        for(let i=0;i<this.wordsList.length;i++){
+            let item = this.wordsList[i];
+            if(item[0].cuuuentEtc == 16){
+                this.wordsList.splice(i,1);
+                i--;
+                break;
+            }
+            for(let c=0;c<item.length;c++){
+                let dot = item[c];
+                let {x,y} = dot;
+                this.ctx.fillRect(x,y,1,1);
+                this.changeWordsState(dot);//效果不太好看，换一个
+            }
         }
+        //this.ctx.save()
+    }
+    changeWordsState(obj){
+        let getY = function(R,X){
+            return Math.pow(R/2,2)-Math.pow((X-R)/2,2)
+        }
+        let{x,cuuuentEtc,number,originY} = obj;
+        let ratio = Math.ceil(number/2);
+        let xDirect = number%2 == 0?1:-1;
+        let newY = originY + getY(ratio,cuuuentEtc+1);
+        let newX = x + xDirect;
+        
+        obj.x = newX;
+        obj.y = newY;
+        obj.cuuuentEtc = cuuuentEtc+1;
+       
     }
     appendContext(){
         super.appendContext();
-       
+        
+        
     }
     bindEvent(){
         
         this.input.addEventListener('input',this.drawNewWord.bind(this))
     }
+    drawMain(){
+        super.drawMain();
+        
+    }
     drawNewWord(e){
-        let value = e.targer.value;
+        let value = e.target.value;
+        console.log(e);
+        //TODO 用e.target.到left-border的距离判断offseX，
+        let code = document.createElement('code');
+        code.innerHTML = value;
+        document.body.appendChild(code);
+        let txtWidth = code.offsetWidth;
+        code.remove();
+        
 
+        this.generateWordData(txtWidth);
+    }
+    generateWordData(offsetX){
+        let arr = [];
+        for(let i=0;i<this.dotNumber;i++){
+            let x = offsetX;
+            arr.push({
+                x,
+                y:this.contextHeight/2,
+                number:i+1,
+                cuuuentEtc:1,
+                originX:x,
+                originY:this.contextHeight/2
+            })
+        }
+        this.wordsList.push(arr);
     }
 }
 
