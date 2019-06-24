@@ -1,5 +1,5 @@
 import canvasBase from '../canvaseBase.js'
-import { Footer } from 'element-ui';
+
 class InputBloom extends canvasBase{
     constructor(node,options){
         super(node);
@@ -23,7 +23,7 @@ class InputBloom extends canvasBase{
         }
         this.ctx.fillStyle = '#fff';
         this.bindEvent();
-        this.ctx.contextHeight = 500;
+        //this.contextHeight = this.canvas.height = 100;
         window.c = this.ctx;
     }
     render(){
@@ -31,7 +31,8 @@ class InputBloom extends canvasBase{
         
         for(let i=0;i<this.wordsList.length;i++){
             let item = this.wordsList[i];
-            if(item[0].cuuuentEtc == 16){
+      
+            if(item[0].currentEtc == 24){
                 this.wordsList.splice(i,1);
                 i--;
                 break;
@@ -46,18 +47,27 @@ class InputBloom extends canvasBase{
         //this.ctx.save()
     }
     changeWordsState(obj){
-        let getY = function(R,X){
-            return Math.pow(R/2,2)-Math.pow((X-R)/2,2)
-        }
-        let{x,cuuuentEtc,number,originY} = obj;
-        let ratio = Math.ceil(number/2);
-        let xDirect = number%2 == 0?1:-1;
-        let newY = this.contextHeight - (originY + getY(ratio,cuuuentEtc+1));
-        let newX = x + xDirect;
+       
         
+        let{x,currentEtc,number,originY,growStop} = obj;
+        let newX,newY;
+        let xDirect = number%2 == 0?1:-1;
+        if(currentEtc <=growStop){
+            newY = originY-currentEtc/2;
+            newX = x;
+        }else{
+            let getY = function(R,X){
+                return Math.pow(R/2,2)-Math.pow((X-R)/2,2)
+            }
+            let ratio = Math.ceil(number/2);
+           
+            newY = this.contextHeight - (originY+(growStop/2) + getY(ratio,(currentEtc+1)/2));
+            newX = x + xDirect/2;
+        }
+       
         obj.x = newX;
         obj.y = newY;
-        obj.cuuuentEtc = cuuuentEtc+1;
+        obj.currentEtc = currentEtc+1;
        
     }
     appendContext(){
@@ -87,19 +97,22 @@ class InputBloom extends canvasBase{
         this.generateWordData(txtWidth + 5);
     }
     generateWordData(offsetX){
-        let rand = Math.floor(Math.random())*6 - 3;
-        let arr = [];
+        
+        let arr = [],ox,oy
         for(let i=0;i<this.dotNumber;i++){
-            let x = offsetX;
-            
+           
+            ox = offsetX+( Math.floor(Math.random()*6) - 6);
+            oy  = this.contextHeight/2 +Math.floor(Math.random()*6) - 6;
             arr.push({
-                x:x+rand,
-                y:this.contextHeight/2,
+                x:ox,
+                y:oy,
                 number:i+1,
-                cuuuentEtc:1,
-                originX:x+rand,
-                originY:this.contextHeight/2
+                currentEtc:1,
+                growStop:10+Math.floor(Math.random()*8),
+                originX:ox,
+                originY:oy
             })
+            console.log(offsetX+'and'+ox)
         }
         this.wordsList.push(arr);
     }

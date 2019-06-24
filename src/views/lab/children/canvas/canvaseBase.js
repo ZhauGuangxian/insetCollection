@@ -16,9 +16,9 @@ class canvasBase{
         let height = this.mountNode.offsetHeight;
         this.canvas = document.createElement('canvas');
         this.contextWidth = this.canvas.width = width;
-        this.contextHeight = this.canvas.height = height;
+        this.contextHeight = this.canvas.height = height*2;
         this.ctx = this.canvas.getContext('2d');
-        let ctx = this.ctx;
+        
         
         this.appendContext();
         this.drawMain();
