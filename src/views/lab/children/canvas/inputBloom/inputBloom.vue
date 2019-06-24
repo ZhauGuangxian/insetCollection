@@ -21,7 +21,7 @@ export default {
     },
     mounted(){
         let target = this.$refs.target;
-        this.canvasEntity = new InputBloom(target,{dotNumber:12});
+        this.canvasEntity = new InputBloom(target,{dotNumber:12,height:100});
         this.canvasEntity.createContext();
     }
 }

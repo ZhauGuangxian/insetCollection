@@ -2,7 +2,7 @@ import canvasBase from '../canvaseBase.js'
 
 class InputBloom extends canvasBase{
     constructor(node,options){
-        super(node);
+        super(node,options);
         let {dotNumber} = options;
         this.input = null;
         this.wordsList = [];
@@ -19,6 +19,11 @@ class InputBloom extends canvasBase{
         }else{
             this.input.style.fontSize = '12px';
             this.input.style.paddingLeft = '5px';
+            this.input.style.position="relative";
+            this.input.style.zIndex= "10";
+            this.canvas.style.position = 'absolute';
+            this.canvas.style.left = '5px';
+            this.canvas.style.top = '-'+(this.contextHeight-this.input.offsetHeight)/2 + 'px';
             this.ctx.font = '12px'
         }
         this.ctx.fillStyle = '#fff';
