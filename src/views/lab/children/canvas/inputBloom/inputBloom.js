@@ -13,6 +13,7 @@ class InputBloom extends canvasBase{
     }
     close(){
         super.close();
+        this.input.remove();
         this.input = null;
     }
     createContext(){
@@ -41,7 +42,7 @@ class InputBloom extends canvasBase{
         for(let i=0;i<this.wordsList.length;i++){
             let item = this.wordsList[i];
       
-            if(item[0].currentEtc == 40){
+            if(item[0].currentEtc == 40){ 
                 this.wordsList.splice(i,1);
                 i--;
                 break;
@@ -50,17 +51,20 @@ class InputBloom extends canvasBase{
                 let dot = item[c];
                 let {x,y} = dot;
                 this.ctx.fillRect(x,y,1,1);
-                this.changeWordsState(dot);//效果不太好看，换一个
+                this.changeWordsState(dot);
             }
         }
         //this.ctx.save()
     }
-    changeWordsState(obj){
-       
-        
+    /**
+     * 
+     * @param {Object} obj |粒子对象
+     */
+    changeWordsState(obj){ 
         let{x,currentEtc,number,y,originY,growStop} = obj;
         let newX,newY;
         let xDirect = number%2 == 0?1:-1;
+        //先让它直线上升一会儿，到点了就按抛物线轨迹开始下落
         if(currentEtc < growStop){
             let getY = function(X){
                 return (2/X);

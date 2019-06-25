@@ -26,6 +26,9 @@ export default {
             animaiRun:true
         }
     },
+    beforeDestroy(){
+        this.canvasEntity.close();
+    },
     methods:{
         handleAnimaiState(){
             this.handleAnimaiState = !this.handleAnimaiState;

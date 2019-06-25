@@ -5,15 +5,21 @@ class canvasBase{
         this.mountNode = node;
         this.contextHeight = 0;
         this.contextWidth = 0;
-        let {height,width} = this.options = options;
-        if(height && typeof height == 'number'){
-            this.contextHeight = height;
-        }
-        if(width && typeof width == 'number'){
-            this.contextWidth = width;
+        if(options){
+
+            let {height,width} = this.options = options;
+            if(height && typeof height == 'number'){
+                this.contextHeight = height;
+            }
+            if(width && typeof width == 'number'){
+                this.contextWidth = width;
+            }
+        }else{
+            this.options = {};
         }
     }
     close(){
+        this.stopRender();
         this.canvas = null;
         this.ctx = null;
         this.mountNode = null;
@@ -48,7 +54,7 @@ class canvasBase{
         
         this.ctx = this.canvas.getContext('2d');
         
-        
+        window.c = this.ctx;
         this.appendContext();
         this.drawMain();
     }

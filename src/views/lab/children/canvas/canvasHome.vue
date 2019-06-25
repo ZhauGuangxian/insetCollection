@@ -5,6 +5,7 @@
         </div>
         <div class="leftList">
             <p @click="selectCanvasName = 'InputBloom'">InputBloom</p>
+            <p @click="selectCanvasName = 'zhihuHome'">知乎首页</p>
         </div>
         <div class="rightShowBox">
             <component :is="selectCanvasName"></component>
@@ -13,11 +14,13 @@
 </template>
 
 <script>
-import InputBloom from './inputBloom/inputBloom.vue'
+import zhihuHome from './zhihuHome/zhihuHome.vue';
+import InputBloom from './inputBloom/inputBloom.vue';
 export default {
     name:'CanvasLabHome',
     components:{
-        InputBloom
+        InputBloom,
+        zhihuHome
     },
     data(){
         return{
