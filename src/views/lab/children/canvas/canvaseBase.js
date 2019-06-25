@@ -5,7 +5,7 @@ class canvasBase{
         this.mountNode = node;
         this.contextHeight = 0;
         this.contextWidth = 0;
-        let {height,width} = options;
+        let {height,width} = this.options = options;
         if(height && typeof height == 'number'){
             this.contextHeight = height;
         }
@@ -13,7 +13,20 @@ class canvasBase{
             this.contextWidth = width;
         }
     }
-
+    close(){
+        this.canvas = null;
+        this.ctx = null;
+        this.mountNode = null;
+    }
+    reset(options){
+        if(options){
+            this.options = options;
+        }
+        this.canvas.remove();
+        this.ctx = null;
+        this.stopRender();
+        this.createContext()
+    }
     createContext(){
         if(!this.mountNode){
             return false;
@@ -44,13 +57,13 @@ class canvasBase{
         
     }
     drawMain(){
-        
         this.render();
-        window.requestAnimationFrame(this.drawMain.bind(this));
-        
-        
-        
+        this.animaReq = window.requestAnimationFrame(this.drawMain.bind(this));
     }
+    stopRender(){
+        window.cancelAnimationFrame(this.animaReq)
+    }
+  
     appendContext(){
         
         this.mountNode.appendChild(this.canvas);

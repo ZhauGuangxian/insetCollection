@@ -45,8 +45,16 @@ export default {
             bottom:0;
             left:0;
             width:300px;
+            padding:10px 5px;
             border-top:1px solid #ddd;
             border-right:1px solid #ddd;
+            >p{
+                line-height:32px;
+                border-bottom:1px solid #dedede;
+                &:last-child{
+                    border-bottom:0
+                }
+            }
         }
         .rightShowBox{
             margin-left:300px;

@@ -11,6 +11,10 @@ class InputBloom extends canvasBase{
         this.dotNumber = dotNumber || 12;
         this.testOffset = 0;
     }
+    close(){
+        super.close();
+        this.input = null;
+    }
     createContext(){
         super.createContext();
         this.input = this.mountNode.querySelector('input');
@@ -37,7 +41,7 @@ class InputBloom extends canvasBase{
         for(let i=0;i<this.wordsList.length;i++){
             let item = this.wordsList[i];
       
-            if(item[0].currentEtc == 24){
+            if(item[0].currentEtc == 40){
                 this.wordsList.splice(i,1);
                 i--;
                 break;
@@ -54,19 +58,26 @@ class InputBloom extends canvasBase{
     changeWordsState(obj){
        
         
-        let{x,currentEtc,number,originY,growStop} = obj;
+        let{x,currentEtc,number,y,originY,growStop} = obj;
         let newX,newY;
         let xDirect = number%2 == 0?1:-1;
-        if(currentEtc <=growStop){
-            newY = originY-currentEtc/2;
+        if(currentEtc < growStop){
+            let getY = function(X){
+                return (2/X);
+            }
+            newY = y-getY(currentEtc/2);
             newX = x;
         }else{
             let getY = function(R,X){
-                return Math.pow(R/2,2)-Math.pow((X-R)/2,2)
+                return Math.pow(R/4,2)-Math.pow((X-R)/4,2)
+            }
+            let startGoTop = 0;
+            for(let i=1;i<=growStop;i++){
+                startGoTop += (2/i)
             }
             let ratio = Math.ceil(number/2);
            
-            newY = this.contextHeight - (originY+(growStop/2) + getY(ratio,(currentEtc+1)/2));
+            newY = this.contextHeight - (originY+(startGoTop) + getY(ratio,(currentEtc+1)/2));
             newX = x + xDirect/2;
         }
        
@@ -106,8 +117,8 @@ class InputBloom extends canvasBase{
         let arr = [],ox,oy
         for(let i=0;i<this.dotNumber;i++){
            
-            ox = offsetX+( Math.floor(Math.random()*6) - 6);
-            oy  = this.contextHeight/2 +Math.floor(Math.random()*6) - 6;
+            ox = offsetX+( Math.floor(Math.random()*6) - 3);
+            oy  = this.contextHeight/2 +Math.floor(Math.random()*6) - 3;
             arr.push({
                 x:ox,
                 y:oy,
@@ -117,7 +128,7 @@ class InputBloom extends canvasBase{
                 originX:ox,
                 originY:oy
             })
-            console.log(offsetX+'and'+ox)
+           
         }
         this.wordsList.push(arr);
     }
