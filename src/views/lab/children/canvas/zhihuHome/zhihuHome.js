@@ -1,5 +1,3 @@
-import canvasBase from '../canvaseBase.js';
-
 class zhihuHome extends canvasBase{
     constructor(node,options){
         super(node,options);

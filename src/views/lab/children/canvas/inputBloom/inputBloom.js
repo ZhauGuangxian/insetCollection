@@ -1,4 +1,4 @@
-import canvasBase from '../canvaseBase.js'
+
 
 class InputBloom extends canvasBase{
     constructor(node,options){

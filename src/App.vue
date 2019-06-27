@@ -6,7 +6,9 @@
 </template>
 
 <script>
-import IcHeader from './components/common/header/header.vue'
+import IcHeader from './components/common/header/header.vue';
+import canvasBase from './views/lab/children/canvas/canvaseBase.js';
+window.canvasBase = canvasBase;
 export default {
   name: 'App',
   components:{
@@ -16,6 +18,7 @@ export default {
 </script>
 
 <style lang="less">
+
 @import './assets/style/publicStyle.less';
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

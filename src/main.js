@@ -5,6 +5,8 @@ import App from './App'
 import router from './router'
 import store from './store/index.js';
 import {fetchPost} from './js/fetch';
+
+
 Vue.config.productionTip = false
 
 Vue.directive('incursor',{
