@@ -23,7 +23,7 @@ export default {
         mounted(){
                 let target = this.$refs.context;
                 let audio = this.$refs.audio;
-                //audio.play();
+                audio.play();
                 this.canvasEntity = new audionVisible(target,{audioNode:audio});
                 this.canvasEntity.init();
 

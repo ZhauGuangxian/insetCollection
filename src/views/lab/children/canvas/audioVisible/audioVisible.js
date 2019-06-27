@@ -25,12 +25,12 @@ class autioVisible extends canvasBase{
                 if(this.audio){
                         this.localSource = this.audioCtx.createMediaElementSource(this.audio);
                         var gainNode = this.audioCtx.createGain();
-                        gainNode.gain.value = 40;
+                        
                         this.localSource.connect(gainNode);
                         this.localSource.connect(this.analyser);
                         gainNode.connect(this.audioCtx.destination);
                 }
-                this.audioCtx.resume();
+                //this.audioCtx.resume();
                 super.init(); //相当于旧的 parent.prototype.init.call(this)
         }
         drawMain(){
