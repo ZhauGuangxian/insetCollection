@@ -20,7 +20,7 @@ export default {
     mounted(){
         let node = this.$refs['target']
         this.canvasEntity = new zhihuHome(node);
-        this.canvasEntity.createContext();  //这个方法应该改名叫init,好理解一些
+        this.canvasEntity.init();  //这个方法应该改名叫init,好理解一些
     }
 }
 </script>

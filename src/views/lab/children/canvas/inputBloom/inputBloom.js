@@ -16,8 +16,8 @@ class InputBloom extends canvasBase{
         this.input.remove();
         this.input = null;
     }
-    createContext(){
-        super.createContext();
+    init(){
+        super.init();
         this.input = this.mountNode.querySelector('input');
         if(!(this.input instanceof Element && (this.input.nodeName === 'INPUT' || this.input.nodeName === 'TEXTAREA'))){
             throw new Error('can not find input element');

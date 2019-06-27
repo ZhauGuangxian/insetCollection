@@ -31,9 +31,9 @@ class canvasBase{
         this.canvas.remove();
         this.ctx = null;
         this.stopRender();
-        this.createContext()
+        this.init()
     }
-    createContext(){
+    init(){
         if(!this.mountNode){
             return false;
         }
