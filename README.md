@@ -7,6 +7,8 @@ vue+vuex+express+mongodb做一个类似pixiv的demo应用。
 #### 现有的特效
 
 ![1](https://images.gitee.com/uploads/images/2019/0628/095459_5f42d313_1753591.gif "inputs.gif")
+
+
 ![仿旧知乎首页](https://images.gitee.com/uploads/images/2019/0628/095945_6e0d6ada_1753591.gif "zhihuhome.gif")
 
 
