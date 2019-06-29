@@ -83,6 +83,7 @@ class autioVisible extends canvasBase{
                 this.ctx.stroke();
         }
         renderBar(){
+                let topBar = [];
                 this.ctx.fillStyle = '#fff';
                 this.ctx.fillRect(0,0,this.contextWidth,this.contextHeight);
                 this.analyser.fftSize = 256;
