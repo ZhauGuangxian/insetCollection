@@ -59,14 +59,21 @@ export default {
                                 if(this.audioInit === false){
                                         this.audioInit = true;
                                         let target = this.$refs.context;
-                                        let audio = this.$refs.audio;
-                                        this.canvasEntity = new audionVisible(target,{audioNode:audio,Type:'bar'});
+                                      
+                                        this.canvasEntity = new audionVisible(target,{audioNode:audio,Type:this.Type});
                                         this.canvasEntity.init();
 
                                 }
                                 audio.play();
                         }else{
                                 audio.pause();
+                        }
+                },
+                Type(val,oldval){
+                        let audio = this.$refs.audio;
+                        if(this.canvasEntity){
+
+                                this.canvasEntity.changeType(val)
                         }
                 }
         }

@@ -41,6 +41,9 @@ class autioVisible extends canvasBase{
                 super.drawMain();
                 
         }
+        changeType(Type){
+                this.Type = Type;
+        }
         renderLine(){
                 //this.analyser.getByteTimeDomainData(this.dataArray);
                 this.analyser.fftSize = 1024;
