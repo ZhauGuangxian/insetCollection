@@ -58,7 +58,7 @@ class autioVisible extends canvasBase{
               
                 this.ctx.beginPath();
               
-                let sliceWidth = this.contextWidth * 2.0 / this.bufferLength;
+                let sliceWidth = this.contextWidth * 1.5 / this.bufferLength;
                 let x = 0;
                 if(this.kangkang === false){
                         console.log(this.dataArray);
