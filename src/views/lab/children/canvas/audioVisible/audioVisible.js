@@ -8,9 +8,14 @@ class autioVisible extends canvasBase{
                 this.audio = null;
                 this.localSource = null;
                 this.bufferLength = null;
-                if(options && options.audioNode && options.audioNode.nodeName == 'AUDIO'){
-                        this.audio = options.audioNode
+                if(options){
+
+                        if(options.audioNode && options.audioNode.nodeName == 'AUDIO'){
+                                this.audio = options.audioNode
+                        }
+                        this.Type = options.Type || 'line'
                 }
+                this.kangkang = false;
         }
         init(){
                 
@@ -18,13 +23,12 @@ class autioVisible extends canvasBase{
                 this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 this.analyser = this.audioCtx.createAnalyser();
                
-                this.analyser.fftSize = 2048;
-                this.bufferLength = this.analyser.frequencyBinCount;
-                this.dataArray = new Uint8Array(this.bufferLength);
-                this.analyser.getByteTimeDomainData(this.dataArray);
+                
+                
+                
                 if(this.audio){
                         this.localSource = this.audioCtx.createMediaElementSource(this.audio);
-                        var gainNode = this.audioCtx.createGain();
+                        let gainNode = this.audioCtx.createGain();
                         
                         this.localSource.connect(gainNode);
                         this.localSource.connect(this.analyser);
@@ -37,27 +41,31 @@ class autioVisible extends canvasBase{
                 super.drawMain();
                 
         }
-        render(){
-                super.render();
-               
-                
+        renderLine(){
+                //this.analyser.getByteTimeDomainData(this.dataArray);
+                this.analyser.fftSize = 1024;
+                this.bufferLength = this.analyser.frequencyBinCount;
+                this.dataArray = new Uint8Array(this.bufferLength);
                 this.analyser.getByteTimeDomainData(this.dataArray);
-              
-                this.ctx.fillStyle = 'rgb(200, 200, 200)';
+                this.ctx.fillStyle = '#fff';
                 this.ctx.fillRect(0, 0, this.contextWidth, this.contextHeight);
               
-                this.ctx.lineWidth = 2;
-                this.ctx.strokeStyle = 'rgb(0, 0, 0)';
+                this.ctx.lineWidth = 1;
+                this.ctx.strokeStyle = '#00a1d6';
               
                 this.ctx.beginPath();
               
-                var sliceWidth = this.contextWidth * 1.0 / this.bufferLength;
-                var x = 0;
+                let sliceWidth = this.contextWidth * 2.0 / this.bufferLength;
+                let x = 0;
+                if(this.kangkang === false){
+                        console.log(this.dataArray);
+                        this.kangkang = true;
+                }
+
+                for (let i = 0; i < this.bufferLength; i++) {
               
-                for (var i = 0; i < this.bufferLength; i++) {
-              
-                  var v = this.dataArray[i] / 128.0;
-                  var y = v * this.contextHeight / 2;
+                  let v = this.dataArray[i] / 128.0;
+                  let y = v * this.contextHeight / 2;
               
                   if (i === 0) {
                     this.ctx.moveTo(x, y);
@@ -70,6 +78,43 @@ class autioVisible extends canvasBase{
               
                 this.ctx.lineTo(this.contextWidth, this.contextHeight / 2);
                 this.ctx.stroke();
+        }
+        renderBar(){
+                this.ctx.fillStyle = '#fff';
+                this.ctx.fillRect(0,0,this.contextWidth,this.contextHeight);
+                this.analyser.fftSize = 256;
+                
+                let bufferLength = this.analyser.frequencyBinCount;
+                let dataArray = new Uint8Array(bufferLength);
+                this.analyser.getByteFrequencyData(dataArray);
+                let x = 0;
+                let barWidth = parseInt(this.contextWidth/bufferLength )
+                for (let i = 0; i < bufferLength; i++) {
+              
+                        let barHeight = dataArray[i];
+                        if(this.kangkang === false){
+                                console.log(dataArray);
+                                this.kangkang = true;
+                        }
+                        this.ctx.fillStyle = `rgba(50,50,${barHeight+20})`;
+                        this.ctx.fillRect(x,this.contextHeight-barHeight/2,barWidth,barHeight/2)
+
+                        x+= barWidth+1;
+                        
+                }
+        }
+        render(){
+                super.render();
+                
+                switch(this.Type){
+                        case 'line':
+                                this.renderLine();
+                                break;
+                        case 'bar':
+                                this.renderBar();
+                }
+                
+               
         }
 }
 

@@ -1,6 +1,14 @@
 <template>
         <div>
-                <p>audioVisible effect</p>
+                <p>
+                        audioVisible effect
+                        <el-button @click="running = !running">播放/暂停</el-button>    
+                </p>
+                <div>
+                        <el-select v-model="Type">
+                                <el-option v-for="item in options" :key="item.value" :value="item.value" :label="item.label"></el-option>       
+                        </el-select>
+                </div>
                 <audio :src="testAudio" ref="audio"></audio>
                 <div class="drawContext" ref="context">
 
@@ -10,23 +18,57 @@
 
 
 <script>
+import {Select,Option,Button} from 'element-ui'
 import testAudio from './test.mp3'
 import audionVisible from './audioVisible.js';
 export default {
         name:'audioVisible',
+        components:{
+                'el-select':Select,
+                'el-button':Button,
+                'el-option':Option
+        },
         data(){
                 return{
                         canvasEntity:null,
-                        testAudio
+                        running:false,
+                        audioInit:false,
+                        testAudio,
+                        options:[
+                                {
+                                        value:'line',
+                                        label:'line'
+                                },
+                                {
+                                        value:'bar',
+                                        label:'bar'
+                                }
+                        ],
+                        Type:'line'
                 }
         },
         mounted(){
-                let target = this.$refs.context;
-                let audio = this.$refs.audio;
-                audio.play();
-                this.canvasEntity = new audionVisible(target,{audioNode:audio});
-                this.canvasEntity.init();
+               
+                //audio.play();
+               
+        },
+        watch:{
+                running(val,oldval){
+                        let audio = this.$refs.audio;
+                        if(val === true){
+                                if(this.audioInit === false){
+                                        this.audioInit = true;
+                                        let target = this.$refs.context;
+                                        let audio = this.$refs.audio;
+                                        this.canvasEntity = new audionVisible(target,{audioNode:audio,Type:'bar'});
+                                        this.canvasEntity.init();
 
+                                }
+                                audio.play();
+                        }else{
+                                audio.pause();
+                        }
+                }
         }
 }
 </script>
