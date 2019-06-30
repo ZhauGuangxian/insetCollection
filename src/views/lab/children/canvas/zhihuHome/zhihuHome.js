@@ -5,7 +5,7 @@ class zhihuHome extends canvasBase{
         this.showLineDistance = (options||{}).distance || 60
         this.grianList = [];
         if(options){
-            this.grianNum = option.grainNumber || 12
+            this.grianNum = options.grainNumber || 12
         }else{
             this.grianNum = 12;
         }

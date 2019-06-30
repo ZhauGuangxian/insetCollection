@@ -16,6 +16,7 @@ class autioVisible extends canvasBase{
                         this.Type = options.Type || 'line'
                 }
                 this.kangkang = false;
+                this.topBarList = [];
         }
         init(){
                 
@@ -83,7 +84,7 @@ class autioVisible extends canvasBase{
                 this.ctx.stroke();
         }
         renderBar(){
-                let topBar = [];
+                
                 this.ctx.fillStyle = '#fff';
                 this.ctx.fillRect(0,0,this.contextWidth,this.contextHeight);
                 this.analyser.fftSize = 256;
@@ -91,20 +92,39 @@ class autioVisible extends canvasBase{
                 let bufferLength = this.analyser.frequencyBinCount;
                 let dataArray = new Uint8Array(bufferLength);
                 this.analyser.getByteFrequencyData(dataArray);
-                let x = 0;
+                let offsetX = 0;
                 let barWidth = parseInt(this.contextWidth/bufferLength )
                 for (let i = 0; i < bufferLength; i++) {
-              
+                       
                         let barHeight = dataArray[i];
-                        if(this.kangkang === false){
-                                console.log(dataArray);
-                                this.kangkang = true;
-                        }
-                        this.ctx.fillStyle = `rgba(50,50,${barHeight+20})`;
-                        this.ctx.fillRect(x,this.contextHeight-barHeight/2,barWidth,barHeight/2)
-
-                        x+= barWidth+1;
                         
+                        this.ctx.fillStyle = `rgba(50,50,${barHeight+20})`;
+                        this.ctx.fillRect(offsetX,this.contextHeight-barHeight/2,barWidth,barHeight/2);
+                        if(this.topBarList.length != bufferLength){
+                                let item = {
+                                        x:offsetX,
+                                        y:this.contextHeight-barHeight/2
+                                }
+                                this.topBarList.push(item);
+                        }else{
+                                let y = this.topBarList[i].y;
+                                if(y> this.contextHeight-barHeight/2){
+                                        this.topBarList[i].y = this.contextHeight-barHeight/2 -1;
+                                }else if(this.topBarList[i].y < this.contextHeight){
+                                        this.topBarList[i].y++;
+                                }
+                        }
+                        
+                        let x = this.topBarList[i].x,y=this.topBarList[i].y;
+                        this.ctx.fillStyle = '#e41212';
+                        this.ctx.fillRect(x,y-3,barWidth,2);
+                        offsetX+= barWidth+1;
+                       
+                        
+                }
+                if(this.kangkang === false){
+                        console.log(this.topBarList);
+                        this.kangkang = true;
                 }
         }
         render(){

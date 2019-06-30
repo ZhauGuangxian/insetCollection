@@ -76,9 +76,10 @@ class InputBloom extends canvasBase{
                 return Math.pow(R/4,2)-Math.pow((X-R)/4,2)
             }
             let startGoTop = 0;
-            for(let i=1;i<=growStop;i++){
+            for(let i=1;i<=growStop-1;i++){
                 startGoTop += (2/i)
             }
+         
             let ratio = Math.ceil(number/2);
            
             newY = this.contextHeight - (originY+(startGoTop) + getY(ratio,(currentEtc+1)/2));
