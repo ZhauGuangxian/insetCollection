@@ -64,6 +64,7 @@ class InputBloom extends canvasBase{
         let{x,currentEtc,number,y,originY,growStop} = obj;
         let newX,newY;
         let xDirect = number%2 == 0?1:-1;
+        
         //先让它直线上升一会儿，到点了就按抛物线轨迹开始下落
         if(currentEtc < growStop){
             let getY = function(X){
@@ -71,18 +72,19 @@ class InputBloom extends canvasBase{
             }
             newY = y-getY(currentEtc/2);
             newX = x;
+          
         }else{
             let getY = function(R,X){
                 return Math.pow(R/4,2)-Math.pow((X-R)/4,2)
             }
             let startGoTop = 0;
             for(let i=1;i<=growStop-1;i++){
-                startGoTop += (2/i)
+                startGoTop += (2/i/2)
             }
          
-            let ratio = Math.ceil(number/2);
+            let ratio = Math.ceil((number-growStop)/2);
            
-            newY = this.contextHeight - (originY+(startGoTop) + getY(ratio,(currentEtc+1)/2));
+            newY = y - getY(ratio,(currentEtc-growStop)/2);
             newX = x + xDirect/2;
         }
        

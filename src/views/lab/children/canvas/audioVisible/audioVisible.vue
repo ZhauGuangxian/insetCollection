@@ -28,6 +28,11 @@ export default {
                 'el-button':Button,
                 'el-option':Option
         },
+        beforeDestroy(){
+                if(this.canvasEntity){
+                        this.canvasEntity.close();
+                }
+        },
         data(){
                 return{
                         canvasEntity:null,
@@ -42,6 +47,9 @@ export default {
                                 {
                                         value:'bar',
                                         label:'bar'
+                                },{
+                                        value:'roundBar',
+                                        label:'roundBar'
                                 }
                         ],
                         Type:'line'

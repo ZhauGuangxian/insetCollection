@@ -127,6 +127,44 @@ class autioVisible extends canvasBase{
                         this.kangkang = true;
                 }
         }
+        renderRoundBar(){
+                this.analyser.fftSize = 256;
+                let bufferLength = this.analyser.frequencyBinCount;
+                let dataArray = new Uint8Array(bufferLength);
+                this.analyser.getByteFrequencyData(dataArray);
+                this.ctx.fillStyle="#fff";
+                this.ctx.fillRect(0,0,this.contextWidth,this.contextHeight);
+                let radius = Math.min(this.contextHeight,this.contextWidth);
+                radius = radius/2 -50;
+                let radian = Math.PI*2/bufferLength;
+                let gap = radian/8;
+                this.ctx.fillStyle = '#e1a3f3';
+                let xCenter = this.contextWidth/2;
+                let yCenter = this.contextHeight/2;
+                
+                for(let i=0;i<bufferLength;i++){
+                        let barHeight = dataArray[i]/8+1;
+                        let startAngel=i*radian;
+                        let endAngel = (i+1)*radian - gap;
+                        this.ctx.beginPath();
+                        /*if(i==0){
+
+                                this.ctx.moveTo(xCenter,yCenter-radius);
+                                this.ctx.lineTo(xCenter + Math.cos(endAngel)*radius,yCenter-Math.sin(endAngel)*radius);
+                                this.ctx.lineTo(xCenter + Math.cos(endAngel)*(radius+barHeight),yCenter-Math.sin(endAngel)*(radius+barHeight));
+                                this.ctx.lineTo(xCenter,yCenter-radius-barHeight);
+                        }else{
+                               
+                        }*/
+                        this.ctx.moveTo(xCenter + Math.cos(startAngel)*radius,yCenter-Math.sin(startAngel)*radius);
+                        this.ctx.lineTo(xCenter + Math.cos(endAngel)*radius,yCenter-Math.sin(endAngel)*radius);
+                        this.ctx.lineTo(xCenter + Math.cos(endAngel)*(radius+barHeight),yCenter-Math.sin(endAngel)*(radius+barHeight));
+                        this.ctx.lineTo(xCenter + Math.cos(startAngel)*(radius+barHeight),yCenter-Math.sin(startAngel)*(radius+barHeight));
+                        this.ctx.closePath();
+                        this.ctx.fill();
+                }
+
+        }
         render(){
                 super.render();
                 
@@ -136,6 +174,13 @@ class autioVisible extends canvasBase{
                                 break;
                         case 'bar':
                                 this.renderBar();
+                                break;
+                        case 'roundBar':
+                                this.renderRoundBar();
+                                break;
+                        default:
+                                this.renderLine();
+                                break;
                 }
                 
                
