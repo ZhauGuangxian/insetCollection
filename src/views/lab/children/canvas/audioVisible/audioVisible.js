@@ -6,44 +6,70 @@ class autioVisible extends canvasBase{
                 this.analyser = null;
                 this.dataArray = null;
                 this.audio = null;
-                this.localSource = null;
+                this.sourceNode = null;
                 this.bufferLength = null;
                 if(options){
 
                         if(options.audioNode && options.audioNode.nodeName == 'AUDIO'){
                                 this.audio = options.audioNode
                         }
-                        this.Type = options.Type || 'line'
+                        this.Type = options.Type || 'line';
+                        this.online = options.online || false;
+                        
                 }
                 this.kangkang = false;
                 this.topBarList = [];
         }
         init(){
-                
-
                 this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 this.analyser = this.audioCtx.createAnalyser();
-               
-                
-                
-                
-                if(this.audio){
-                        this.localSource = this.audioCtx.createMediaElementSource(this.audio);
-                        let gainNode = this.audioCtx.createGain();
-                        
-                        this.localSource.connect(gainNode);
-                        this.localSource.connect(this.analyser);
-                        gainNode.connect(this.audioCtx.destination);
+                if(this.audio && this.online === false){     
+                        this.sourceNode = this.audioCtx.createMediaElementSource(this.audio);          
+                }else if(this.online === true){
+                        this.sourceNode = this.audioCtx.createBufferSource();
+                        this.sourceNode.loop = true;
                 }
+                let gainNode = this.audioCtx.createGain();
+                        
+                this.sourceNode.connect(gainNode);
+                this.sourceNode.connect(this.analyser);
+                gainNode.connect(this.audioCtx.destination);
                 //this.audioCtx.resume();
                 super.init(); //相当于旧的 parent.prototype.init.call(this)
         }
         drawMain(){
-                super.drawMain();
-                
+                super.drawMain(); 
         }
         changeType(Type){
                 this.Type = Type;
+        }
+        getOnlineBuffer(url,type='switch'){
+                if(type === 'switch'){
+                        this.sourceNode.stop();
+                        this.sourceNode = null;
+                        this.sourceNode = this.audioCtx.createBufferSource();
+                        let gainNode = this.audioCtx.createGain();
+                        
+                        this.sourceNode.connect(gainNode);
+                        this.sourceNode.connect(this.analyser);
+                        this.sourceNode.loop = true;
+                        gainNode.connect(this.audioCtx.destination);
+                }
+                let source = this.sourceNode;
+               
+                let request = new XMLHttpRequest();
+                request.open("GET", url, true);
+                request.responseType = "arraybuffer";
+                request.onload = ()=>{
+                        this.audioCtx.decodeAudioData(request.response, (buffer)=>{
+                                source.buffer = buffer;
+                                source.start(0)
+                        }, (e)=>{
+                                console.log(e);
+                               
+                        });
+                };
+                request.send();
         }
         renderLine(){
                 //this.analyser.getByteTimeDomainData(this.dataArray);
@@ -59,7 +85,7 @@ class autioVisible extends canvasBase{
               
                 this.ctx.beginPath();
               
-                let sliceWidth = this.contextWidth * 1.5 / this.bufferLength;
+                let sliceWidth = this.contextWidth * 1.0 / this.bufferLength;
                 let x = 0;
                 if(this.kangkang === false){
                         console.log(this.dataArray);
