@@ -4,7 +4,7 @@ class autioVisible extends canvasBase{
 
                 this.audioCtx = null;
                 this.analyser = null;
-                this.dataArray = null;
+    
                 this.audio = null;
                 this.sourceNode = null;
                 this.bufferLength = null;
@@ -17,8 +17,9 @@ class autioVisible extends canvasBase{
                         this.online = options.online || false;
                         
                 }
-                this.kangkang = false;
+                
                 this.topBarList = [];
+                
         }
         init(){
                 this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -34,16 +35,55 @@ class autioVisible extends canvasBase{
                 this.sourceNode.connect(gainNode);
                 this.sourceNode.connect(this.analyser);
                 gainNode.connect(this.audioCtx.destination);
+                this.analyser.fftSize = 1024;
                 //this.audioCtx.resume();
                 super.init(); //相当于旧的 parent.prototype.init.call(this)
+        }
+        stop(){
+                if(this.online === true){
+                        if(this.audioCtx.state == 'running'){
+
+                                this.audioCtx.suspend().then(()=>{
+        
+                                        this.sourceNode.disconnect(this.analyser);
+                                });
+                        }
+                }else{
+                        this.audio.pause();
+                }
+        }
+        play(){
+                if(this.online === true){
+                       
+                        if(this.audioCtx.state == 'suspended'){
+
+                                this.audioCtx.resume().then(()=>{
+                                        this.analyser = null;
+                                        this.analyser = this.audioCtx.createAnalyser();
+                                        this.sourceNode.connect(this.analyser);
+                                });
+                        }
+                }else{
+                        this.audio.play();
+                }
         }
         drawMain(){
                 super.drawMain(); 
         }
         changeType(Type){
                 this.Type = Type;
+               
         }
-        getOnlineBuffer(url,type='switch'){
+        close(){
+                if(this.online === true){
+                        delete this;
+                        this.sourceNode = null;
+                }else{
+                        this.audio = null;
+                        
+                }
+        }
+        async getOnlineBuffer(url,type='switch'){
                 if(type === 'switch'){
                         this.sourceNode.stop();
                         this.sourceNode = null;
@@ -60,23 +100,28 @@ class autioVisible extends canvasBase{
                 let request = new XMLHttpRequest();
                 request.open("GET", url, true);
                 request.responseType = "arraybuffer";
-                request.onload = ()=>{
-                        this.audioCtx.decodeAudioData(request.response, (buffer)=>{
-                                source.buffer = buffer;
-                                source.start(0)
-                        }, (e)=>{
-                                console.log(e);
-                               
-                        });
-                };
                 request.send();
+                let buffer =await new Promise((resolve,reject)=>{
+                        request.onload = ()=>{
+                                this.audioCtx.decodeAudioData(request.response, (buffer)=>{
+                                        resolve(buffer);
+                                }, (e)=>{
+                                        reject(e);
+                                       
+                                });
+                        };
+                })
+                
+                this.sourceNode.buffer = buffer;
+                this.sourceNode.start(0);
+                
         }
         renderLine(){
                 //this.analyser.getByteTimeDomainData(this.dataArray);
                 this.analyser.fftSize = 1024;
                 this.bufferLength = this.analyser.frequencyBinCount;
-                this.dataArray = new Uint8Array(this.bufferLength);
-                this.analyser.getByteTimeDomainData(this.dataArray);
+                let dataArray = new Uint8Array(this.bufferLength);
+                this.analyser.getByteTimeDomainData(dataArray);
                 this.ctx.fillStyle = '#fff';
                 this.ctx.fillRect(0, 0, this.contextWidth, this.contextHeight);
               
@@ -87,14 +132,11 @@ class autioVisible extends canvasBase{
               
                 let sliceWidth = this.contextWidth * 1.0 / this.bufferLength;
                 let x = 0;
-                if(this.kangkang === false){
-                        console.log(this.dataArray);
-                        this.kangkang = true;
-                }
+            
 
                 for (let i = 0; i < this.bufferLength; i++) {
               
-                  let v = this.dataArray[i] / 128.0;
+                  let v = dataArray[i] / 128.0;
                   let y = v * this.contextHeight / 2;
               
                   if (i === 0) {
@@ -110,10 +152,10 @@ class autioVisible extends canvasBase{
                 this.ctx.stroke();
         }
         renderBar(){
-                
+                this.analyser.fftSize = 256;
                 this.ctx.fillStyle = '#fff';
                 this.ctx.fillRect(0,0,this.contextWidth,this.contextHeight);
-                this.analyser.fftSize = 256;
+                
                 
                 let bufferLength = this.analyser.frequencyBinCount;
                 let dataArray = new Uint8Array(bufferLength);
@@ -136,7 +178,7 @@ class autioVisible extends canvasBase{
                                 let y = this.topBarList[i].y;
                                 if(y> this.contextHeight-barHeight/2){
                                         this.topBarList[i].y = this.contextHeight-barHeight/2 -1;
-                                }else if(this.topBarList[i].y < this.contextHeight){
+                                }else if(this.topBarList[i].y < this.contextHeight && y != this.contextHeight-barHeight/2){
                                         this.topBarList[i].y++;
                                 }
                         }
@@ -148,10 +190,7 @@ class autioVisible extends canvasBase{
                        
                         
                 }
-                if(this.kangkang === false){
-                        console.log(this.topBarList);
-                        this.kangkang = true;
-                }
+                
         }
         renderRoundBar(){
                 this.analyser.fftSize = 512;
@@ -176,15 +215,7 @@ class autioVisible extends canvasBase{
                         this.ctx.fillStyle = `rgb(66,66,${rounddataArray[i]+100})`;
                         let endAngel = (i+1)*radian - gap;
                         this.ctx.beginPath();
-                        /*if(i==0){
-
-                                this.ctx.moveTo(xCenter,yCenter-radius);
-                                this.ctx.lineTo(xCenter + Math.cos(endAngel)*radius,yCenter-Math.sin(endAngel)*radius);
-                                this.ctx.lineTo(xCenter + Math.cos(endAngel)*(radius+barHeight),yCenter-Math.sin(endAngel)*(radius+barHeight));
-                                this.ctx.lineTo(xCenter,yCenter-radius-barHeight);
-                        }else{
-                               
-                        }*/
+                       
                         this.ctx.moveTo(xCenter + Math.cos(startAngel)*radius,yCenter-Math.sin(startAngel)*radius);
                         this.ctx.lineTo(xCenter + Math.cos(endAngel)*radius,yCenter-Math.sin(endAngel)*radius);
                         this.ctx.lineTo(xCenter + Math.cos(endAngel)*(radius+barHeight),yCenter-Math.sin(endAngel)*(radius+barHeight));

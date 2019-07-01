@@ -52,7 +52,7 @@ export default {
                 return{
                         playList:[],
                         canvasEntity:null,
-                        running:false,
+                        running:true,
                         audioInit:false,
                         onlineAudioNotInt:true,
                         options:[
@@ -72,9 +72,7 @@ export default {
                 }
         },
         mounted(){
-            //fetchGet('https://api.imjad.cn/cloudmusic/?type=search&s=辉大基基&search_type=1000').then(result=>{
-                //console.log(result)
-            //}) //2595943882
+            
             let target = this.$refs.context;
             this.canvasEntity = new audionVisible(target,{online:true,Type:this.Type});
             this.canvasEntity.init();
@@ -113,7 +111,14 @@ export default {
         },
         watch:{
                 running(val,oldval){
-                       
+                        if(this.canvasEntity){
+
+                            if(val === true){
+                                this.canvasEntity.play();
+                            }else{
+                                this.canvasEntity.stop();
+                            }
+                        }
                 },
                 Type(val,oldval){
                         let audio = this.$refs.audio;
