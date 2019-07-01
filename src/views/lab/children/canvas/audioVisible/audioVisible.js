@@ -128,7 +128,7 @@ class autioVisible extends canvasBase{
                 }
         }
         renderRoundBar(){
-                this.analyser.fftSize = 256;
+                this.analyser.fftSize = 512;
                 let bufferLength = this.analyser.frequencyBinCount;
                 let dataArray = new Uint8Array(bufferLength);
                 this.analyser.getByteFrequencyData(dataArray);
@@ -136,15 +136,18 @@ class autioVisible extends canvasBase{
                 this.ctx.fillRect(0,0,this.contextWidth,this.contextHeight);
                 let radius = Math.min(this.contextHeight,this.contextWidth);
                 radius = radius/2 -50;
-                let radian = Math.PI*2/bufferLength;
-                let gap = radian/8;
-                this.ctx.fillStyle = '#e1a3f3';
+                
+                
+                
                 let xCenter = this.contextWidth/2;
                 let yCenter = this.contextHeight/2;
-                
-                for(let i=0;i<bufferLength;i++){
-                        let barHeight = dataArray[i]/8+1;
+                let rounddataArray = dataArray.slice(30,bufferLength-50);
+                let radian = Math.PI*2/rounddataArray.length;
+                let gap = radian/8;
+                for(let i=0;i<rounddataArray.length;i++){
+                        let barHeight = rounddataArray[i]/8+1;
                         let startAngel=i*radian;
+                        this.ctx.fillStyle = `rgb(66,66,${rounddataArray[i]+100})`;
                         let endAngel = (i+1)*radian - gap;
                         this.ctx.beginPath();
                         /*if(i==0){

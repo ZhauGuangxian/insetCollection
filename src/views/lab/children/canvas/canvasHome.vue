@@ -6,7 +6,7 @@
         <div class="leftList">
             <p @click="selectCanvasName = 'InputBloom'">InputBloom</p>
             <p @click="selectCanvasName = 'zhihuHome'">知乎首页</p>
-            <p @click="selectCanvasName = 'audioVisible'">音乐可视化</p>
+            <p @click="selectCanvasName = 'audioVisible'">本地音乐可视化</p>
         </div>
         <div class="rightShowBox">
             <component :is="selectCanvasName"></component>
