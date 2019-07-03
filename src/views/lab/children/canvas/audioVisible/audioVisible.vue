@@ -50,6 +50,9 @@ export default {
                                 },{
                                         value:'roundBar',
                                         label:'roundBar'
+                                },{
+                                    value:'crystal',
+                                    label:'crystal'
                                 }
                         ],
                         Type:'line'

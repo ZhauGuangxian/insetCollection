@@ -118,7 +118,7 @@ class autioVisible extends canvasBase{
         }
         renderLine(){
                 //this.analyser.getByteTimeDomainData(this.dataArray);
-                this.analyser.fftSize = 1024;
+                this.analyser.fftSize = 512;
                 this.bufferLength = this.analyser.frequencyBinCount;
                 let dataArray = new Uint8Array(this.bufferLength);
                 this.analyser.getByteTimeDomainData(dataArray);
@@ -150,15 +150,16 @@ class autioVisible extends canvasBase{
               
                 this.ctx.lineTo(this.contextWidth, this.contextHeight / 2);
                 this.ctx.stroke();
+                this.ctx.save();
         }
         renderBar(){
-                this.analyser.fftSize = 256;
+                this.analyser.fftSize = 512;
                 this.ctx.fillStyle = '#fff';
                 this.ctx.fillRect(0,0,this.contextWidth,this.contextHeight);
                 
                 
-                let bufferLength = this.analyser.frequencyBinCount;
-                let dataArray = new Uint8Array(bufferLength);
+                let bufferLength = 240;
+                let dataArray = new Uint8Array(240);
                 this.analyser.getByteFrequencyData(dataArray);
                 let offsetX = 0;
                 let barWidth = parseInt(this.contextWidth/bufferLength )
@@ -193,8 +194,10 @@ class autioVisible extends canvasBase{
                 
         }
         renderRoundBar(){
-                this.analyser.fftSize = 512;
-                let bufferLength = this.analyser.frequencyBinCount;
+                this.analyser.minDecibels = -90;
+                this.analyser.maxDecibels = -10;
+                this.analyser.fftSize = 1024;
+                let bufferLength = 180//this.analyser.frequencyBinCount;
                 let dataArray = new Uint8Array(bufferLength);
                 this.analyser.getByteFrequencyData(dataArray);
                 this.ctx.fillStyle="#fff";
@@ -206,7 +209,7 @@ class autioVisible extends canvasBase{
                 let xCenter = this.contextWidth/2;
                 let yCenter = this.contextHeight/2;
                 let rounddataArray = [...dataArray]
-                rounddataArray = rounddataArray.slice(32,rounddataArray.length-100)
+                rounddataArray = rounddataArray.slice(32,rounddataArray.length)
                 let gap1 = rounddataArray[0]-rounddataArray[rounddataArray.length-1],count = 0;
                 let lowest = rounddataArray[rounddataArray.length-1];
                 while(count < 4){
@@ -215,6 +218,7 @@ class autioVisible extends canvasBase{
                         lowest+=gap1/4;
                         rounddataArray.push(lowest);
                 }
+                
                 let radian = Math.PI*2/rounddataArray.length;
                 let gap = radian/4;
                 for(let i=0;i<rounddataArray.length;i++){
@@ -233,6 +237,74 @@ class autioVisible extends canvasBase{
                 }
 
         }
+        renderCrystal(){
+                this.analyser.minDecibels = -90;
+                this.analyser.maxDecibels = -10;
+                this.analyser.fftSize = 1024;
+                let bufferLength = 128;
+                let dataArray = new Uint8Array(bufferLength);
+                this.analyser.getByteFrequencyData(dataArray);
+                
+                this.ctx.fillStyle="#fff";
+                this.ctx.fillRect(0,0,this.contextWidth,this.contextHeight);
+                this.ctx.strokeStyle='#e43h71';
+
+                
+                let radius = Math.min(this.contextHeight,this.contextWidth);
+                radius = radius/2 -50;
+                let xCenter = this.contextWidth/2;
+                let yCenter = this.contextHeight/2;
+                this.ctx.beginPath();
+                let max = Math.max.apply([],dataArray)
+                let line = max/2,growRatio = 6;
+                let transedDataArray = [...dataArray]  //.concat([...dataArray].reverse());
+                transedDataArray = transedDataArray.slice(32,transedDataArray.length);
+
+                let gap1 = transedDataArray[0]-transedDataArray[transedDataArray.length-1],count = 0;
+                let lowest = transedDataArray[transedDataArray.length-1],firstHeight = transedDataArray[0];
+                while(count < 8){
+                        
+                        count++;
+                        lowest+=gap1/8;
+                        transedDataArray.push(lowest);
+                }
+                let radian = Math.PI*2/transedDataArray.length;
+                this.ctx.moveTo(xCenter+Math.cos(0)*(radius+(Math.max(firstHeight-line,0))/growRatio),yCenter+Math.sin(0)*(radius+(Math.max(firstHeight-line,0))/growRatio));
+                for(let i=0;i<transedDataArray.length;i++){
+                        let height = transedDataArray[i];
+                        let angel = (i+1)*radian;
+                        if(height >line){
+                                this.ctx.lineTo(xCenter+Math.cos(angel)*(radius+(height-line)/growRatio),yCenter+Math.sin(angel)*(radius+(height-line)/growRatio));
+                               
+                        }else{
+                                this.ctx.lineTo(xCenter+Math.cos(angel)*radius,yCenter+Math.sin(angel)*radius);
+                        }
+                }
+
+                this.ctx.stroke();
+                this.ctx.closePath();
+
+                this.ctx.beginPath();
+                this.ctx.moveTo(xCenter+Math.cos(0)*(radius-(Math.max(firstHeight-line,0))/growRatio),yCenter+Math.sin(0)*(radius-(Math.max(firstHeight-line,0))/growRatio));
+                for(let c=0;c<transedDataArray.length;c++){
+                        let height = transedDataArray[c];
+                        let angel = (c+1)*radian;
+                        
+                        if(height >line){
+                                this.ctx.lineTo(xCenter+Math.cos(angel)*(radius-(height-line)/growRatio),yCenter+Math.sin(angel)*(radius-(height-line)/growRatio));
+                                this.ctx.lineTo(xCenter+Math.cos(angel)*(radius+(height-line)/growRatio),yCenter+Math.sin(angel)*(radius+(height-line)/growRatio));
+                                this.ctx.moveTo(xCenter+Math.cos(angel)*(radius-(height-line)/growRatio),yCenter+Math.sin(angel)*(radius-(height-line)/growRatio));
+                        }else if(c>0 && transedDataArray[c-1]>line){
+                                this.ctx.lineTo(xCenter+Math.cos(angel)*radius,yCenter+Math.sin(angel)*radius);
+                        }else{
+                                this.ctx.moveTo(xCenter+Math.cos(angel)*radius,yCenter+Math.sin(angel)*radius);
+                        }
+                }
+
+                this.ctx.stroke();
+                this.ctx.closePath();
+                this.ctx.save();
+        }
         render(){
                 super.render();
                 
@@ -245,6 +317,9 @@ class autioVisible extends canvasBase{
                                 break;
                         case 'roundBar':
                                 this.renderRoundBar();
+                                break;
+                        case 'crystal':
+                                this.renderCrystal();
                                 break;
                         default:
                                 this.renderLine();
