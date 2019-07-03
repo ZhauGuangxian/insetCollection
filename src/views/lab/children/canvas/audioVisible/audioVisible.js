@@ -136,8 +136,8 @@ class autioVisible extends canvasBase{
 
                 for (let i = 0; i < this.bufferLength; i++) {
               
-                  let v = dataArray[i] / 128.0;
-                  let y = v * this.contextHeight / 2;
+                  let v = dataArray[i] / 256.0;
+                  let y = v * this.contextHeight/2 + this.contextHeight/4;
               
                   if (i === 0) {
                     this.ctx.moveTo(x, y);
@@ -203,16 +203,24 @@ class autioVisible extends canvasBase{
                 radius = radius/2 -50;
                 
                 
-                
                 let xCenter = this.contextWidth/2;
                 let yCenter = this.contextHeight/2;
-                let rounddataArray = dataArray.slice(30,bufferLength-50);
+                let rounddataArray = [...dataArray]
+                rounddataArray = rounddataArray.slice(32,rounddataArray.length-100)
+                let gap1 = rounddataArray[0]-rounddataArray[rounddataArray.length-1],count = 0;
+                let lowest = rounddataArray[rounddataArray.length-1];
+                while(count < 4){
+                        
+                        count++;
+                        lowest+=gap1/4;
+                        rounddataArray.push(lowest);
+                }
                 let radian = Math.PI*2/rounddataArray.length;
-                let gap = radian/8;
+                let gap = radian/4;
                 for(let i=0;i<rounddataArray.length;i++){
-                        let barHeight = rounddataArray[i]/8+1;
+                        let barHeight = rounddataArray[i]/6+1;
                         let startAngel=i*radian;
-                        this.ctx.fillStyle = `rgb(66,66,${rounddataArray[i]+100})`;
+                        this.ctx.fillStyle = `rgb(66,66,${rounddataArray[i]})`;
                         let endAngel = (i+1)*radian - gap;
                         this.ctx.beginPath();
                        
