@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <!--<MtexTransfer v-model="mockValue" :data="data" :title="['待选的','已选的']" :showSearchForm="true"></MtexTransfer>-->
+    
     <router-link to="/lab">go to lab</router-link>
     <div class="mainContent">
       <div class="inside">

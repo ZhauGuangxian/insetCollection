@@ -1,5 +1,5 @@
 <template>
-        <div class="audioOnline">
+        <div class="audioOnline" ref="main">
             <div class="left">
                 <div class="playList">
                     <div class="songTitle">
@@ -32,7 +32,7 @@
 
 
 <script>
-import {Select,Option,Button} from 'element-ui'
+import {Select,Option,Button,Loading} from 'element-ui'
 
 import audionVisible from './audioVisible.js';
 import {fetchGet} from '@/js/fetch.js';
@@ -55,6 +55,7 @@ export default {
                         running:true,
                         audioInit:false,
                         onlineAudioNotInt:true,
+                        onlineLoading:false,
                         options:[
                                 {
                                         value:'line',
@@ -100,13 +101,17 @@ export default {
                     if(!bufferUrl){
                         alert('该单曲可能不是免费的')
                     }else{
-
+                        let loadingInstance = Loading.service({body:true,text:'音频加载中'});
                         if(this.onlineAudioNotInt === true){
     
-                            this.canvasEntity.getOnlineBuffer(bufferUrl,'init');
+                            this.canvasEntity.getOnlineBuffer(bufferUrl,'init',()=>{
+                                loadingInstance.close();
+                            });
                             this.onlineAudioNotInt = null;
                         }else{
-                            this.canvasEntity.getOnlineBuffer(bufferUrl,'switch');
+                            this.canvasEntity.getOnlineBuffer(bufferUrl,'switch',()=>{
+                                loadingInstance.close();
+                            });
                         }
                     }
                 }

@@ -83,7 +83,7 @@ class autioVisible extends canvasBase{
                         
                 }
         }
-        async getOnlineBuffer(url,type='switch'){
+        async getOnlineBuffer(url,type='switch',callback){
                 if(type === 'switch'){
                         this.sourceNode.stop();
                         this.sourceNode = null;
@@ -96,13 +96,16 @@ class autioVisible extends canvasBase{
                         gainNode.connect(this.audioCtx.destination);
                 }
                 let source = this.sourceNode;
-               
+                
                 let request = new XMLHttpRequest();
                 request.open("GET", url, true);
                 request.responseType = "arraybuffer";
                 request.send();
                 let buffer =await new Promise((resolve,reject)=>{
                         request.onload = ()=>{
+                                if(typeof callback  == 'function'){
+                                        callback();
+                                }
                                 this.audioCtx.decodeAudioData(request.response, (buffer)=>{
                                         resolve(buffer);
                                 }, (e)=>{
@@ -255,7 +258,7 @@ class autioVisible extends canvasBase{
                 let xCenter = this.contextWidth/2;
                 let yCenter = this.contextHeight/2;
                 this.ctx.beginPath();
-                let max = Math.max.apply([],dataArray)
+                let max = Math.max.apply([],dataArray);
                 let line = max/2,growRatio = 6;
                 let transedDataArray = [...dataArray]  //.concat([...dataArray].reverse());
                 transedDataArray = transedDataArray.slice(32,transedDataArray.length);
