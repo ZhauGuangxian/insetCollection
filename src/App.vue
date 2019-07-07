@@ -8,6 +8,8 @@
 <script>
 import IcHeader from './components/common/header/header.vue';
 import canvasBase from './views/lab/children/canvas/canvaseBase.js';
+import * as THREE from 'three';
+window.THREE = THREE;
 window.canvasBase = canvasBase;
 export default {
   name: 'App',

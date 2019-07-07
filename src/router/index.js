@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import Home from '@/views/Home';
 import NotFound from '@/views/404';
 import LabHome from '@/views/lab/labHome';
-import ThreeLab from '@/views/lab/children/threelab';
+import ThreeLab from '@/views/lab/children/three/threehome.vue';
 import CanvasLabHome from '@/views/lab/children/canvas/canvasHome.vue'
 Vue.use(Router)
 

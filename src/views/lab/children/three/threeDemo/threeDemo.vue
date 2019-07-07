@@ -11,7 +11,7 @@ import * as THREE from 'three';
 import {Button} from 'element-ui';
 import OrbitControls from 'three-orbitcontrols';
 export default {
-    name:'ThreeHome',
+    name:'ThreeDemo',
     components:{
         'el-button':Button
     },
