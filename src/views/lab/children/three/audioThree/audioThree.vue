@@ -19,7 +19,7 @@
 
 <script>
 import {Select,Option,Button} from 'element-ui'
-import testAudio from './test.mp3'
+import testAudio from '../../canvas/audioVisible/test.mp3'
 import audioThree from './audioThree.js';
 export default {
         name:'audioThree',

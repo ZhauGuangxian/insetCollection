@@ -95,7 +95,7 @@ class autioVisible extends canvasBase{
                         this.sourceNode.loop = true;
                         gainNode.connect(this.audioCtx.destination);
                 }
-                let source = this.sourceNode;
+                this.sourceNode;
                 
                 let request = new XMLHttpRequest();
                 request.open("GET", url, true);
@@ -196,6 +196,10 @@ class autioVisible extends canvasBase{
                 }
                 
         }
+        resize(){
+                this.topBarList = [];
+                super.resize();
+        }
         renderRoundBar(){
                 this.analyser.minDecibels = -90;
                 this.analyser.maxDecibels = -10;
@@ -248,9 +252,9 @@ class autioVisible extends canvasBase{
                 let dataArray = new Uint8Array(bufferLength);
                 this.analyser.getByteFrequencyData(dataArray);
                 
-                this.ctx.fillStyle="#fff";
+                this.ctx.fillStyle=this.options.backgroundColor || "#fff";
                 this.ctx.fillRect(0,0,this.contextWidth,this.contextHeight);
-                this.ctx.strokeStyle='#e43h71';
+                this.ctx.strokeStyle=this.options.clolr || '#e43h71';
 
                 
                 let radius = Math.min(this.contextHeight,this.contextWidth);

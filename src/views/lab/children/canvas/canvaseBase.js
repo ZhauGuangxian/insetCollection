@@ -74,5 +74,11 @@ class canvasBase{
         
         this.mountNode.appendChild(this.canvas);
     }
+    resize(){
+        this.contextHeight = this.mountNode.offsetHeight;
+        this.contextWidth = this.mountNode.offsetWidth;
+        this.canvas.width = this.contextWidth;
+        this.canvas.height = this.contextHeight;
+    }
 }
-export default canvasBase
+export default canvasBase;

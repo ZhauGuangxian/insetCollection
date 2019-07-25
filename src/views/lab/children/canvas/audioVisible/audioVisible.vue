@@ -18,6 +18,8 @@
 
 
 <script>
+
+import {debounce} from '@/utils/index.js';
 import {Select,Option,Button} from 'element-ui'
 import testAudio from './test.mp3'
 import audionVisible from './audioVisible.js';
@@ -32,6 +34,7 @@ export default {
                 if(this.canvasEntity){
                         this.canvasEntity.close();
                 }
+                window.removeEventListener('resize', this.handleResize);
         },
         data(){
                 return{
@@ -59,9 +62,11 @@ export default {
                 }
         },
         mounted(){
-               
+               this.handleResize = debounce(()=>{
+                       this.canvasEntity.resize();
+               },400)
                 //audio.play();
-               
+               window.addEventListener('resize', this.handleResize);
         },
         watch:{
                 running(val,oldval){
