@@ -4,7 +4,7 @@ class autioVisible extends canvasBase{
 
                 this.audioCtx = null;
                 this.analyser = null;
-    
+                this.firstLoadPic = true;
                 this.audio = null;
                 this.sourceNode = null;
                 this.bufferLength = null;
@@ -39,6 +39,9 @@ class autioVisible extends canvasBase{
                 //this.audioCtx.resume();
                 super.init(); //相当于旧的 parent.prototype.init.call(this)
         }
+        stopRender(){
+                super.stopRender();
+        }
         stop(){
                 if(this.online === true){
                         if(this.audioCtx.state == 'running'){
@@ -66,6 +69,9 @@ class autioVisible extends canvasBase{
                 }else{
                         this.audio.play();
                 }
+        }
+        reset(options){
+                super.reset(options)
         }
         drawMain(){
                 super.drawMain(); 
@@ -125,9 +131,6 @@ class autioVisible extends canvasBase{
                 this.bufferLength = this.analyser.frequencyBinCount;
                 let dataArray = new Uint8Array(this.bufferLength);
                 this.analyser.getByteTimeDomainData(dataArray);
-                this.ctx.fillStyle = '#fff';
-                this.ctx.fillRect(0, 0, this.contextWidth, this.contextHeight);
-              
                 this.ctx.lineWidth = 1;
                 this.ctx.strokeStyle = '#00a1d6';
               
@@ -157,9 +160,6 @@ class autioVisible extends canvasBase{
         }
         renderBar(){
                 this.analyser.fftSize = 512;
-                this.ctx.fillStyle = '#fff';
-                this.ctx.fillRect(0,0,this.contextWidth,this.contextHeight);
-                
                 
                 let bufferLength = 240;
                 let dataArray = new Uint8Array(240);
@@ -207,8 +207,7 @@ class autioVisible extends canvasBase{
                 let bufferLength = 180//this.analyser.frequencyBinCount;
                 let dataArray = new Uint8Array(bufferLength);
                 this.analyser.getByteFrequencyData(dataArray);
-                this.ctx.fillStyle="#fff";
-                this.ctx.fillRect(0,0,this.contextWidth,this.contextHeight);
+                
                 let radius = Math.min(this.contextHeight,this.contextWidth);
                 radius = radius/2 -50;
                 
@@ -252,8 +251,7 @@ class autioVisible extends canvasBase{
                 let dataArray = new Uint8Array(bufferLength);
                 this.analyser.getByteFrequencyData(dataArray);
                 
-                this.ctx.fillStyle=this.options.backgroundColor || "#fff";
-                this.ctx.fillRect(0,0,this.contextWidth,this.contextHeight);
+                
                 this.ctx.strokeStyle=this.options.clolr || '#e43h71';
 
                 
@@ -314,7 +312,25 @@ class autioVisible extends canvasBase{
         }
         render(){
                 super.render();
-                
+                if(!this.options.picUrl){
+                        this.ctx.fillStyle=this.options.backgroundColor || "#fff";
+                        this.ctx.fillRect(0,0,this.contextWidth,this.contextHeight);
+                }else{
+                        if(this.firstLoadPic === true){
+                                this.picImg = new Image();
+                        
+                                this.picImg.src = this.options.picUrl;
+                                this.picImg.onload = ()=>{
+                                        this.firstLoadPic = false;
+                                        this.ctx.drawImage(this.picImg,0,0,this.contextWidth,this.contextHeight);
+                                }
+                        }else{
+                                this.ctx.drawImage(this.picImg,0,0,this.contextWidth,this.contextHeight);
+                        }
+                        
+                        
+                        
+                }
                 switch(this.Type){
                         case 'line':
                                 this.renderLine();

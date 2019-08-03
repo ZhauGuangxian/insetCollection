@@ -1,5 +1,8 @@
 class canvasBase{
     constructor(node,options){
+        // options.picUrl 背景图
+        // options.indistinct 是否模糊背景
+        // options.
         this.ctx = null;
         this.canvas = null;
         this.mountNode = node;
@@ -28,9 +31,9 @@ class canvasBase{
         if(options){
             this.options = options;
         }
+        this.stopRender();
         this.canvas.remove();
         this.ctx = null;
-        this.stopRender();
         this.init()
     }
     init(){

@@ -6,7 +6,7 @@
                         博主18年网易云音乐年度歌单    
                     </div>     
                     <div class="song" v-for="song in playList" :key="song.id">
-                        <span @click.self="playSong(song.id)">{{song.name}}</span>
+                        <span @click.self="playSong(song)">{{song.name}}</span>
                     </div>
                 </div>
             </div>
@@ -92,9 +92,12 @@ export default {
                
         },
         methods:{
-            async playSong(id){
-                
+            async playSong(song){
+                let { id } = song;
                 let url = `https://api.imjad.cn/cloudmusic/?type=song&id=${id}&br=128000`;
+                let picUrl = (song.al || {}).picUrl;
+                const newOptions = {online:true,Type:this.Type,picUrl}
+                this.canvasEntity.reset(newOptions);
                 let mp3Obj = await fetchGet(url);
                 if(mp3Obj.data instanceof Array && mp3Obj.data.length>0){
                     let bufferUrl = mp3Obj.data[0].url;
@@ -120,7 +123,7 @@ export default {
         watch:{
                 running(val,oldval){
                         if(this.canvasEntity){
-
+                            this.canvasEntity.stopRender();
                             if(val === true){
                                 this.canvasEntity.play();
                             }else{
