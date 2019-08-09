@@ -1,3 +1,90 @@
+/*
+ * @Author: gaigai
+ * @Date: 2019-07-24 09:19:53
+ * @LastEditors: gaigai
+ * @LastEditTime: 2019-08-09 16:18:38
+ * @Description: 
+ * @Email: 1054257376@qq.com
+ * @habit: carton girl
+ */
+const gaussBlur = function(imgData,radius,sigma) {
+        var pixes = imgData.data;
+        var width = imgData.width;
+        var height = imgData.height;
+        var gaussMatrix = [],
+         gaussSum = 0,
+         x, y,
+         r, g, b, a,
+         i, j, k, len;
+        
+        var radius = radius || 10;
+        var sigma = sigma || 5;
+        
+        a = 1 / (Math.sqrt(2 * Math.PI) * sigma);
+        b = -1 / (2 * sigma * sigma);
+        //生成高斯矩阵
+        for (i = 0, x = -radius; x <= radius; x++, i++) {
+         g = a * Math.exp(b * x * x);
+         gaussMatrix[i] = g;
+         gaussSum += g;
+        
+        }
+        
+        //归一化, 保证高斯矩阵的值在[0,1]之间
+        for (i = 0, len = gaussMatrix.length; i < len; i++) {
+         gaussMatrix[i] /= gaussSum;
+        }
+        //x 方向一维高斯运算
+        for (y = 0; y < height; y++) {
+         for (x = 0; x < width; x++) {
+         r = g = b = a = 0;
+         gaussSum = 0;
+         for (j = -radius; j <= radius; j++) {
+          k = x + j;
+          if (k >= 0 && k < width) {//确保 k 没超出 x 的范围
+          //r,g,b,a 四个一组
+          i = (y * width + k) * 4;
+          r += pixes[i] * gaussMatrix[j + radius];
+          g += pixes[i + 1] * gaussMatrix[j + radius];
+          b += pixes[i + 2] * gaussMatrix[j + radius];
+          // a += pixes[i + 3] * gaussMatrix[j];
+          gaussSum += gaussMatrix[j + radius];
+          }
+         }
+         i = (y * width + x) * 4;
+         // 除以 gaussSum 是为了消除处于边缘的像素, 高斯运算不足的问题
+         // console.log(gaussSum)
+         pixes[i] = r / gaussSum;
+         pixes[i + 1] = g / gaussSum;
+         pixes[i + 2] = b / gaussSum;
+         // pixes[i + 3] = a ;
+         }
+        }
+        //y 方向一维高斯运算
+        for (x = 0; x < width; x++) {
+         for (y = 0; y < height; y++) {
+         r = g = b = a = 0;
+         gaussSum = 0;
+         for (j = -radius; j <= radius; j++) {
+          k = y + j;
+          if (k >= 0 && k < height) {//确保 k 没超出 y 的范围
+          i = (k * width + x) * 4;
+          r += pixes[i] * gaussMatrix[j + radius];
+          g += pixes[i + 1] * gaussMatrix[j + radius];
+          b += pixes[i + 2] * gaussMatrix[j + radius];
+          // a += pixes[i + 3] * gaussMatrix[j];
+          gaussSum += gaussMatrix[j + radius];
+          }
+         }
+         i = (y * width + x) * 4;
+         pixes[i] = r / gaussSum;
+         pixes[i + 1] = g / gaussSum;
+         pixes[i + 2] = b / gaussSum;
+         }
+        }
+        return imgData;
+        }
+
 class autioVisible extends canvasBase{
         constructor(node,options){
                 super(node,options);
@@ -38,6 +125,27 @@ class autioVisible extends canvasBase{
                 this.analyser.fftSize = 1024;
                 //this.audioCtx.resume();
                 super.init(); //相当于旧的 parent.prototype.init.call(this)
+
+                if(this.options.picUrl){
+                 
+                        if(this.firstLoadPic === true){
+                                this.picImg = new Image();
+                                this.picImg.crossOrigin = '';
+                                this.picImg.src = this.options.picUrl;
+                                let _this = this;
+                                this.picImg.onload = ()=>{
+                                        _this.ctx.drawImage(_this.picImg,0,0,_this.contextWidth,_this.contextHeight);
+                                        _this.CoverImgData = _this.ctx.getImageData(0,0,_this.contextWidth,_this.contextHeight);
+                                        
+                                        _this.CoverImgData = gaussBlur(_this.CoverImgData,40,80);
+                                        _this.ctx.putImageData(_this.CoverImgData,0,0);
+                                        _this.picImg.src = this.canvas.toDataURL();
+                                
+                                        _this.picImg.onload = null;
+                                        _this.firstLoadPic = false;
+                                }
+                        }   
+                }
         }
         stopRender(){
                 super.stopRender();
@@ -71,7 +179,27 @@ class autioVisible extends canvasBase{
                 }
         }
         reset(options){
-                super.reset(options)
+                super.reset(options);
+                if(this.options.picUrl){
+                 
+                        if(this.firstLoadPic === true){
+                                this.picImg = new Image();
+                                this.picImg.crossOrigin = '';
+                                this.picImg.src = this.options.picUrl;
+                                let _this = this;
+                                this.picImg.onload = ()=>{
+                                        _this.ctx.drawImage(_this.picImg,0,0,_this.contextWidth,_this.contextHeight);
+                                        _this.CoverImgData = _this.ctx.getImageData(0,0,_this.contextWidth,_this.contextHeight);
+                                        
+                                        _this.CoverImgData = gaussBlur(_this.CoverImgData,40,80);
+                                        _this.ctx.putImageData(_this.CoverImgData,0,0);
+                                        _this.picImg.src = this.canvas.toDataURL();
+                                
+                                        _this.picImg.onload = null;
+                                        _this.firstLoadPic = false;
+                                }
+                        }   
+                }
         }
         drawMain(){
                 super.drawMain(); 
@@ -250,11 +378,7 @@ class autioVisible extends canvasBase{
                 let bufferLength = 128;
                 let dataArray = new Uint8Array(bufferLength);
                 this.analyser.getByteFrequencyData(dataArray);
-                
-                
-                this.ctx.strokeStyle=this.options.clolr || '#e43h71';
-
-                
+                this.ctx.strokeStyle=this.options.clolr || '#e43f71';
                 let radius = Math.min(this.contextHeight,this.contextWidth);
                 radius = radius/2 -50;
                 let xCenter = this.contextWidth/2;
@@ -312,25 +436,12 @@ class autioVisible extends canvasBase{
         }
         render(){
                 super.render();
-                if(!this.options.picUrl){
-                        this.ctx.fillStyle=this.options.backgroundColor || "#fff";
-                        this.ctx.fillRect(0,0,this.contextWidth,this.contextHeight);
-                }else{
-                        if(this.firstLoadPic === true){
-                                this.picImg = new Image();
-                        
-                                this.picImg.src = this.options.picUrl;
-                                this.picImg.onload = ()=>{
-                                        this.firstLoadPic = false;
-                                        this.ctx.drawImage(this.picImg,0,0,this.contextWidth,this.contextHeight);
-                                }
-                        }else{
-                                this.ctx.drawImage(this.picImg,0,0,this.contextWidth,this.contextHeight);
-                        }
-                        
-                        
-                        
+                if(this.firstLoadPic === false){
+                        this.ctx.putImageData(this.CoverImgData,0,0);
+                        //this.picImg.src = this.canvas.toDataURL();        
+                        //this.picImg.onload = null;
                 }
+                
                 switch(this.Type){
                         case 'line':
                                 this.renderLine();

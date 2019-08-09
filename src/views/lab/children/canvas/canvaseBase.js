@@ -1,3 +1,12 @@
+/*
+ * @Author: gaigai
+ * @Date: 2019-07-24 09:19:53
+ * @LastEditors: gaigai
+ * @LastEditTime: 2019-08-09 14:29:14
+ * @Description: 
+ * @Email: 1054257376@qq.com
+ * @habit: carton girl
+ */
 class canvasBase{
     constructor(node,options){
         // options.picUrl 背景图

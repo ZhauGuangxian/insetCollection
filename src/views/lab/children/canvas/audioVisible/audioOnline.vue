@@ -1,3 +1,12 @@
+<!--
+ * @Author: gaigai
+ * @Date: 2019-07-24 09:19:53
+ * @LastEditors: gaigai
+ * @LastEditTime: 2019-08-09 15:58:32
+ * @Description: 
+ * @Email: 1054257376@qq.com
+ * @habit: carton girl
+ -->
 <template>
         <div class="audioOnline" ref="main">
             <div class="left">
@@ -96,6 +105,7 @@ export default {
                 let { id } = song;
                 let url = `https://api.imjad.cn/cloudmusic/?type=song&id=${id}&br=128000`;
                 let picUrl = (song.al || {}).picUrl;
+                console.log(picUrl)
                 const newOptions = {online:true,Type:this.Type,picUrl}
                 this.canvasEntity.reset(newOptions);
                 let mp3Obj = await fetchGet(url);
