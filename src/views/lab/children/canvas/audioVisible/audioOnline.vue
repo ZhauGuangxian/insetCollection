@@ -133,10 +133,11 @@ export default {
         watch:{
                 running(val,oldval){
                         if(this.canvasEntity){
-                            this.canvasEntity.stopRender();
                             if(val === true){
+                                
                                 this.canvasEntity.play();
                             }else{
+                                
                                 this.canvasEntity.stop();
                             }
                         }

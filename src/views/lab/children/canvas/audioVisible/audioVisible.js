@@ -83,8 +83,33 @@ const gaussBlur = function(imgData,radius,sigma) {
          }
         }
         return imgData;
-        }
+}
 
+const getImageColor=function(data,width,height) {
+       let r=0,g=0,b=0;
+     
+        // 取所有像素的平均值
+        for (var row = 0; row < height; row++) {
+            for (var col = 0; col < width; col++) {
+                r += data[((width * row) + col) * 4];
+                g += data[((width * row) + col) * 4 + 1];
+                b += data[((width * row) + col) * 4 + 2];
+            }
+        }
+     
+        // 求取平均值
+        r /= (width * height);
+        g /= (width * height);
+        b /= (width * height);
+     
+        // 将最终的值取整
+        r = Math.round(r);
+        g = Math.round(g);
+        b = Math.round(b);
+        return {
+                r, g, b
+        }
+    }
 class autioVisible extends canvasBase{
         constructor(node,options){
                 super(node,options);
@@ -95,6 +120,7 @@ class autioVisible extends canvasBase{
                 this.audio = null;
                 this.sourceNode = null;
                 this.bufferLength = null;
+
                 if(options){
 
                         if(options.audioNode && options.audioNode.nodeName == 'AUDIO'){
@@ -104,7 +130,7 @@ class autioVisible extends canvasBase{
                         this.online = options.online || false;
                         
                 }
-                
+                this.options.color = options.color || '#00a1d6';
                 this.topBarList = [];
                 
         }
@@ -120,6 +146,7 @@ class autioVisible extends canvasBase{
                 let gainNode = this.audioCtx.createGain();
                         
                 this.sourceNode.connect(gainNode);
+                this.analyser.smoothingTimeConstant = 0.8;
                 this.sourceNode.connect(this.analyser);
                 gainNode.connect(this.audioCtx.destination);
                 this.analyser.fftSize = 1024;
@@ -136,7 +163,10 @@ class autioVisible extends canvasBase{
                                 this.picImg.onload = ()=>{
                                         _this.ctx.drawImage(_this.picImg,0,0,_this.contextWidth,_this.contextHeight);
                                         _this.CoverImgData = _this.ctx.getImageData(0,0,_this.contextWidth,_this.contextHeight);
-                                        
+                                        let themeColor = getImageColor(_this.CoverImgData.data,_this.contextWidth,_this.contextHeight);
+                                        const {r, g, b} = themeColor;
+                                        _this.options.color = `rgb(${255-r},${255-g},${255-b})`;
+                                        console.log(_this.options.color);
                                         _this.CoverImgData = gaussBlur(_this.CoverImgData,40,80);
                                         _this.ctx.putImageData(_this.CoverImgData,0,0);
                                         _this.picImg.src = this.canvas.toDataURL();
@@ -146,33 +176,33 @@ class autioVisible extends canvasBase{
                                 }
                         }   
                 }
+                this.count = 1;
         }
         stopRender(){
                 super.stopRender();
         }
         stop(){
+                this.stopRender();
                 if(this.online === true){
                         if(this.audioCtx.state == 'running'){
-
-                                this.audioCtx.suspend().then(()=>{
-        
+                                this.audioCtx.suspend().then(function(){
                                         this.sourceNode.disconnect(this.analyser);
-                                });
+                                }.bind(this));
                         }
                 }else{
                         this.audio.pause();
                 }
         }
         play(){
+                this.drawMain();
                 if(this.online === true){
                        
                         if(this.audioCtx.state == 'suspended'){
-
-                                this.audioCtx.resume().then(()=>{
+                                this.audioCtx.resume().then(function(){
                                         this.analyser = null;
                                         this.analyser = this.audioCtx.createAnalyser();
                                         this.sourceNode.connect(this.analyser);
-                                });
+                                }.bind(this));
                         }
                 }else{
                         this.audio.play();
@@ -228,9 +258,7 @@ class autioVisible extends canvasBase{
                         this.sourceNode.connect(this.analyser);
                         this.sourceNode.loop = true;
                         gainNode.connect(this.audioCtx.destination);
-                }
-                this.sourceNode;
-                
+                };
                 let request = new XMLHttpRequest();
                 request.open("GET", url, true);
                 request.responseType = "arraybuffer";
@@ -238,7 +266,7 @@ class autioVisible extends canvasBase{
                 let buffer =await new Promise((resolve,reject)=>{
                         request.onload = ()=>{
                                 if(typeof callback  == 'function'){
-                                        callback();
+                                        callback.call(this);
                                 }
                                 this.audioCtx.decodeAudioData(request.response, (buffer)=>{
                                         resolve(buffer);
@@ -260,8 +288,12 @@ class autioVisible extends canvasBase{
                 let dataArray = new Uint8Array(this.bufferLength);
                 this.analyser.getByteTimeDomainData(dataArray);
                 this.ctx.lineWidth = 1;
-                this.ctx.strokeStyle = '#00a1d6';
-              
+                this.ctx.strokeStyle = this.options.color || '#00a1d6';
+                this.count++;
+                if(this.count % 30 == 0){
+
+                        console.log(dataArray);
+                }
                 this.ctx.beginPath();
               
                 let sliceWidth = this.contextWidth * 1.0 / this.bufferLength;
@@ -284,7 +316,7 @@ class autioVisible extends canvasBase{
               
                 this.ctx.lineTo(this.contextWidth, this.contextHeight / 2);
                 this.ctx.stroke();
-                this.ctx.save();
+                //this.ctx.save();
         }
         renderBar(){
                 this.analyser.fftSize = 512;
@@ -297,8 +329,8 @@ class autioVisible extends canvasBase{
                 for (let i = 0; i < bufferLength; i++) {
                        
                         let barHeight = dataArray[i];
-                        
-                        this.ctx.fillStyle = `rgba(50,50,${barHeight+20})`;
+                        let color = this.options.color.replace(/^rgb\(([\d]{1,3}),([\d]{1,3}),([\d]{1,3})\)$/,'rgb($1,$2,'+(barHeight+20)+')');
+                        this.ctx.fillStyle = color;
                         this.ctx.fillRect(offsetX,this.contextHeight-barHeight/2,barWidth,barHeight/2);
                         if(this.topBarList.length != bufferLength){
                                 let item = {
@@ -316,7 +348,7 @@ class autioVisible extends canvasBase{
                         }
                         
                         let x = this.topBarList[i].x,y=this.topBarList[i].y;
-                        this.ctx.fillStyle = '#e41212';
+                        this.ctx.fillStyle =  this.options.color || '#e41212';
                         this.ctx.fillRect(x,y-3,barWidth,2);
                         offsetX+= barWidth+1;
                        
