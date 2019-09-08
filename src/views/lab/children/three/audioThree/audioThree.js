@@ -1,12 +1,14 @@
 
 import ThreeBase from '../threeBase.js';
+import { BloomEffect } from '../bloomEffect';
 
 class audioThree extends ThreeBase{
     constructor(options){
         super(options);
-
+        
         this.audioCtx = null;
         this.anaylser = null;
+        this.renderer.shadowMapEnabled  = true;
         if(options.type == 'online'){
             this.online = true;
             
@@ -24,10 +26,34 @@ class audioThree extends ThreeBase{
         this.animateType = options.animateType || 'bar';
         this.barGroup = null;
         this.cubelineGroup = null;
+        this.controls.maxPolarAngle = Math.PI / 2 - Math.PI/180 * 10;
         this.kangkang = true;
+       
+        let light = new THREE.AmbientLight( 0x777777);
+        this.scene.add( light );
+        let dirLight = new THREE.DirectionalLight( 0x523318);
+		dirLight.position.set( 0, 20, -20 );
+        dirLight.castShadow = true;
+        this.scene.add( dirLight );
+		dirLight.shadow.mapSize.width = 1024;
+        dirLight.shadow.mapSize.height = 1024;
+        const d = 100;
+        dirLight.shadow.camera.left = - d;
+        dirLight.shadow.camera.right = d;
+        dirLight.shadow.camera.top = d;
+        dirLight.shadow.camera.bottom = - d;
+        dirLight.shadow.camera.far = 200;
+        let ground = new THREE.PlaneBufferGeometry(3000,3000);
+        let groundMesh = new THREE.Mesh(ground, new THREE.MeshLambertMaterial({color:0xefefef, side:THREE.DoubleSide}));
+        
+        groundMesh.rotation.x = -Math.PI / 2;
+        groundMesh.receiveShadow = true;
+        this.scene.add(groundMesh);
+        this.clock = new THREE.Clock();
+        this.bloomComposer = BloomEffect(this.renderer, this.scene, this.camera);
     }
     init(){
-
+        
         this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         this.analyser = this.audioCtx.createAnalyser();
         if(this.audioNode && this.online === false){     
@@ -41,14 +67,17 @@ class audioThree extends ThreeBase{
         this.sourceNode.connect(gainNode);
         this.sourceNode.connect(this.analyser);
         gainNode.connect(this.audioCtx.destination);
-        var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
-        this.scene.add( light );
+        this.analyser.fftSize = 256;
+        this.bufferLength = 64;
+        
+        this.initBars();
+        this.scene.fog = new THREE.FogExp2(0xcce0ff,0.002);
         super.init();
- 
         //this.camera.position.set( 100, 200, 0 );
     }
     drawMain(){
         
+        this.bloomComposer.render();
         super.drawMain();
     }
     render(){
@@ -60,53 +89,49 @@ class audioThree extends ThreeBase{
             default:
                 break;
         }
+        
         super.render();
     }
-    drawBar(){
-        this.analyser.fftSize = 256;
-       
-
+    initBars() {
         let bufferLength = 64;
-        let dataArray = new Uint8Array(bufferLength);
-        this.analyser.getByteFrequencyData(dataArray);
-       
-        let barWidth = 1.5,barGap = 2;
+        let barWidth = 2.5,barGap = 0.5;
+        this.barGroup = new THREE.Group();
+        //this.cubelineGroup = new THREE.Group();
+        this.barGroup.name="bars";
+        //this.cubelineGroup.name = "barLines";
+        let material = new THREE.MeshStandardMaterial( {color: 0x00a1d6} );
+        let geometry = new THREE.BoxBufferGeometry( barWidth, barWidth, barWidth );
         
-        if(!this.barGroup){
-            this.barGroup = new THREE.Group();
-            this.cubelineGroup = new THREE.Group();
-            this.barGroup.name="bars";
-            this.cubelineGroup.name = "barLines"
-            for(let i = 0; i < bufferLength; i++){
-                let geometry = new THREE.BoxBufferGeometry( barWidth, barWidth, 2 );
-                let material = new THREE.MeshBasicMaterial( {color: 0x00a1d6} );
-                let edge = new THREE.EdgesGeometry(geometry);
-                let cubeline = new THREE.LineSegments(edge,new THREE.MeshBasicMaterial({color:0xffffff}));
-                let barItem = new THREE.Mesh( geometry, material );
-                barItem.name = 'bar'+i;
-                barItem.position.set( i*(barWidth+barGap)-100,1, 1 );
-                cubeline.position.set( i*(barWidth+barGap)-100,1, 1 );
-                this.cubelineGroup.add(cubeline);
-                
-                this.barGroup.add(barItem);
-            }
-            this.scene.add(this.barGroup);
-            this.scene.add(this.cubelineGroup);
-            this.camera.position.set( 0, 0, 0 );
-        }else{
-            let bars = this.scene.getObjectByName('bars');
-            let lines = this.scene.getObjectByName('barLines');
-            for (let i = 0; i < bufferLength; i++) {
-
-                let barHeight = dataArray[i]/10 +0.5;
-    
-                let mesh = bars.children[i];
-                let mesh2 = lines.children[i];
-                mesh.scale.y = barHeight;
-                mesh2.scale.y = barHeight;
-    
-            }
+        for(let i = 0; i < bufferLength; i++){
+            // let edge = new THREE.EdgesGeometry(geometry);
+            // let cubeline = new THREE.LineSegments(edge,new THREE.MeshBasicMaterial({color:0xffffff}));
+            let barItem = new THREE.Mesh( geometry, material );
+            barItem.name = 'bar'+i;
+            barItem.position.set( (i-Math.ceil(bufferLength/2))*(barWidth+barGap),0, 0 );
+            //cubeline.position.set( (i-Math.ceil(bufferLength/2))*(barWidth+barGap),1, 1 );
+            //this.cubelineGroup.add(cubeline);
+            barItem.castShadow = true;
+            barItem.receiveShadow = true;
+            this.barGroup.add(barItem);
         }
+       
+        this.scene.add(this.barGroup);
+            //this.scene.add(this.cubelineGroup);
+        this.camera.position.set( 50, 50, 100 );
+        
+    }
+    drawBar(){
+            this.dataArray = new Uint8Array(this.bufferLength);
+            this.analyser.getByteFrequencyData(this.dataArray);
+            let bars = this.scene.getObjectByName('bars');
+            //let lines = this.scene.getObjectByName('barLines');
+            for (let i = 0; i < this.bufferLength; i++) {
+                let barHeight = this.dataArray[i]/10 +0.5;
+                let mesh = bars.children[i];
+                //let mesh2 = lines.children[i];
+                mesh.scale.y = barHeight;
+            }
+        
         
         
     }

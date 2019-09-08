@@ -19,7 +19,7 @@
 
 <script>
 import {Select,Option,Button} from 'element-ui'
-import testAudio from '../../canvas/audioVisible/test.mp3'
+import testAudio from './test.mp3'
 import audioThree from './audioThree.js';
 export default {
         name:'audioThree',
@@ -29,11 +29,11 @@ export default {
                 'el-option':Option
         },
         beforeDestroy(){
-              
+              this.$data.threeEntity.close();
         },
         data(){
                 return{
-                        threeEntity:null,
+                        
                         running:false,
                         audioInit:false,
                         testAudio,
@@ -60,11 +60,14 @@ export default {
             let context = this.$refs.context;
             let audioNode = this.$refs.audio;
                 //audio.play();
-            this.threeEntity = new audioThree({
+            this.$data.threeEntity = new audioThree({
                 target:context,
-                audioNode
+                audioNode,
+                dev: true,
+                background: 0xcce0ff
             })
-            this.threeEntity.init();
+            window.t = this.$data.threeEntity;
+            this.$data.threeEntity.init();
         },
         watch:{
                 running(val,oldval){
@@ -76,9 +79,6 @@ export default {
                         }
                 },
                
-        },
-        beforeDestroy(){
-            this.threeEntity.close();
         }
 }
 </script>
