@@ -8,6 +8,7 @@
             <p @click="selectCanvasName = 'zhihuHome'">知乎首页</p>
             <p @click="selectCanvasName = 'audioVisible'">本地音乐可视化</p>
             <p @click="selectCanvasName = 'audioOnline'">在线音乐可视化</p>
+            <p @click="selectCanvasName='ballPool'">小球集合</p>
         </div>
         <div class="rightShowBox">
             <component :is="selectCanvasName"></component>
@@ -20,13 +21,15 @@ import zhihuHome from './zhihuHome/zhihuHome.vue';
 import InputBloom from './inputBloom/inputBloom.vue';
 import audioVisible from './audioVisible/audioVisible.vue';
 import audioOnline from './audioVisible/audioOnline.vue';
+import ballPool from './ballPool/ballPool.vue';
 export default {
     name:'CanvasLabHome',
     components:{
         InputBloom,
         zhihuHome,
         audioVisible,
-        audioOnline
+        audioOnline,
+        ballPool
     },
     data(){
         return{

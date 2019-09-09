@@ -29,23 +29,7 @@ class canvasBase{
         }else{
             this.options = {};
         }
-    }
-    close(){
-        this.stopRender();
-        this.canvas = null;
-        this.ctx = null;
-        this.mountNode = null;
-    }
-    reset(options){
-        if(options){
-            this.options = options;
-        }
-        this.stopRender();
-        this.canvas.remove();
-        this.ctx = null;
-        this.init()
-    }
-    init(){
+
         if(!this.mountNode){
             return false;
         }
@@ -65,9 +49,26 @@ class canvasBase{
         }
         
         this.ctx = this.canvas.getContext('2d');
-        
-        window.c = this.ctx;
+    
         this.appendContext();
+    }
+    close(){
+        this.stopRender();
+        this.canvas = null;
+        this.ctx = null;
+        this.mountNode = null;
+    }
+    reset(options){
+        if(options){
+            this.options = options;
+        }
+        this.stopRender();
+        this.canvas.remove();
+        this.ctx = null;
+        this.init()
+    }
+    init(){
+        
         this.drawMain();
     }
     render(){
