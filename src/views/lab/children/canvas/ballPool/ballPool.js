@@ -1,3 +1,12 @@
+/*
+ * @Author: gaigai
+ * @Date: 2019-09-10 09:43:49
+ * @LastEditors: gaigai
+ * @LastEditTime: 2019-09-10 10:22:00
+ * @Description: 
+ * @Email: 1054257376@qq.com
+ * @habit: carton girl
+ */
 import canvasBase from '../canvaseBase';
 class BallPool extends canvasBase{
     constructor(node, options){
@@ -7,6 +16,7 @@ class BallPool extends canvasBase{
         this.BOX_HEIGHT = 400;
         this.ctx.lineWidth = 3;
         this.ctx.strokeStyle = '#00a1d6';
+        this.ballSpeed = 1;
     }
 
     initBalls(){
@@ -52,17 +62,52 @@ class BallPool extends canvasBase{
         this.ctx.closePath();
     }
     renderBalls() {
-        const len = this.BallList.length;
+        let len = this.BallList.length;
         
         for(let i=0;i<len;i ++) {
             const ball = this.BallList[i];
-            const {x,y,color,radius} = ball;
+            let {x,y,color,radius} = ball;
+            for(let c = i+1; c< len; c++) {
+                let ballC = this.BallList[c];
+                let cx = ballC.x,cy = ballC.y;
+                let dx = Math.abs(x-cx);
+                let dy = Math.abs(y-cy);
+                let dl = Math.sqrt(dx * dx + dy * dy);
+                
+
+                if(dl <= radius + ballC.radius) {
+                    const angel = Math.atan(dy / dx);
+                    if(x < cx) {
+                        ball.x -= Math.cos(angel) * 1;
+                        ballC.x += Math.cos(angel) * 1;
+                    } else {
+                        ball.x += Math.cos(angel) * 1;
+                        ballC.x -= Math.cos(angel) * 1;
+                    }
+                    if(y < cy) {
+                        ball.y -= Math.sin(angel) * 1;
+                        ballC.y += Math.sin(angel) * 1;
+                    } else {
+                        ball.y += Math.sin(angel) * 1;
+                        ballC.y -= Math.sin(angel) * 1;
+                    }
+                }
+            }
+            
             this.ctx.beginPath();
             this.ctx.moveTo(x,y)
             this.ctx.arc(x,y,radius,0,Math.PI * 2);
             this.ctx.fillStyle = color;
             this.ctx.fill();
             this.ctx.closePath();
+            if(ball.y <  (this.contextHeight + this.BOX_HEIGHT) / 2) {
+                ball.y += this.ballSpeed;
+
+            }
+        }
+        this.ballSpeed+=0.15;
+        if(this.ballSpeed > 4) {
+            this.ballSpeed = 4;
         }
     }
     render(){
