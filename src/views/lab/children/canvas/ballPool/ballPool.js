@@ -45,19 +45,26 @@ class BallPool extends canvasBase{
     }
     init(){
         this.initBalls();
-        super.init();
-    }
-    renderBox() {
         const left = (this.contextWidth - this.BOX_WIDTH) / 2;
         const right = (this.contextWidth + this.BOX_WIDTH) / 2;
         const bottom = (this.contextHeight + this.BOX_HEIGHT) / 2;
         const top = (this.contextHeight - this.BOX_HEIGHT) / 2;
+        this.boxLT = {x: left - 50,y: top};
+        this.boxLB = {x: left + 50,y: bottom};
+        this.boxRB = {x: right - 50, y: bottom };
+        this.boxRT = {x: right + 50,y :top};
+        // 框的角度
+        this.boxAngel = Math.atan(Math.abs( bottom - top)/100);
+        super.init();
+    }
+    renderBox() {
+        
         this.ctx.beginPath();
         
-        this.ctx.moveTo(left - 50, top);
-        this.ctx.lineTo(left + 50, bottom);
-        this.ctx.lineTo(right - 50, bottom);
-        this.ctx.lineTo(right + 50,top);
+        this.ctx.moveTo(this.boxLT.x, this.boxLT.y);
+        this.ctx.lineTo(this.boxLB.x, this.boxLB.y);
+        this.ctx.lineTo(this.boxRB.x, this.boxRB.y);
+        this.ctx.lineTo(this.boxRT.x,this.boxRT.y);
         this.ctx.stroke();
         this.ctx.closePath();
     }
@@ -67,14 +74,14 @@ class BallPool extends canvasBase{
         for(let i=0;i<len;i ++) {
             const ball = this.BallList[i];
             let {x,y,color,radius} = ball;
+            
             for(let c = i+1; c< len; c++) {
                 let ballC = this.BallList[c];
                 let cx = ballC.x,cy = ballC.y;
                 let dx = Math.abs(x-cx);
                 let dy = Math.abs(y-cy);
                 let dl = Math.sqrt(dx * dx + dy * dy);
-                
-
+                // 判断球和球之间是否碰撞
                 if(dl <= radius + ballC.radius) {
                     const angel = Math.atan(dy / dx);
                     if(x < cx) {
@@ -92,14 +99,56 @@ class BallPool extends canvasBase{
                         ballC.y -= Math.sin(angel) * 1;
                     }
                 }
+
             }
-            
+            // 判断球是否和边界碰撞 start
+            if(!ball.angel) {
+                // debugger;
+                if(x > this.boxLT.x && x < this.boxLB.x) { //在左边
+                    let dx = Math.abs(x - this.boxLT.x);
+                    let dy = Math.abs(y - this.boxLB.y);
+                    let angelL = Math.atan(dy / dx);
+                    // 长边的长
+                    let dis = Math.sqrt(dx * dx + dy * dy);
+                    angelL = Math.abs(this.boxAngel - angelL);
+                    // 圆心到边界的距离
+                    let dis2 = dis * Math.sin(angelL);
+                    if(dis2 < radius) {
+                        
+                        ball.angel = angelL;
+                        ball.dir = 1;
+                    }
+                }
+                if(x > this.boxRB.x && x < this.boxRT.x) { //在右边
+                    let dx = Math.abs(this.boxRT.x - x); 
+                    let dy = Math.abs(y - this.boxRB.y);
+                    let angelL = Math.atan(dy / dx);
+                    // 长边的长
+                    let dis = Math.sqrt(dx * dx + dy * dy);
+                    angelL = Math.abs(this.boxAngel - angelL);
+                    // 圆心到边界的距离
+                    let dis2 = dis * Math.sin(angelL);
+                    if(dis2 < radius) {
+                        
+                        ball.angel = angelL;
+                        ball.dir = -1;
+                    }
+                }
+            }
+
+
+            // 判断球是否和边界碰撞 end
             this.ctx.beginPath();
             this.ctx.moveTo(x,y)
             this.ctx.arc(x,y,radius,0,Math.PI * 2);
             this.ctx.fillStyle = color;
             this.ctx.fill();
             this.ctx.closePath();
+            if(ball.angel) {
+                let offsetX = this.ballSpeed * Math.cos(this.boxAngel);
+                ball.x += ball.dir * offsetX;
+                
+            } 
             if(ball.y <  (this.contextHeight + this.BOX_HEIGHT) / 2) {
                 ball.y += this.ballSpeed;
 

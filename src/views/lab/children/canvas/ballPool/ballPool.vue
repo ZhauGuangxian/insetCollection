@@ -16,6 +16,7 @@ export default {
                 ballNum: 28
             }
             this.$data.canvasEntity = new BallPool(document.getElementById('ballscollect',option));
+            window.aa = this.$data.canvasEntity;
             this.$data.canvasEntity.init();
         })
     }
