@@ -74,33 +74,6 @@ class BallPool extends canvasBase{
         for(let i=0;i<len;i ++) {
             const ball = this.BallList[i];
             let {x,y,color,radius} = ball;
-            
-            for(let c = i+1; c< len; c++) {
-                let ballC = this.BallList[c];
-                let cx = ballC.x,cy = ballC.y;
-                let dx = Math.abs(x-cx);
-                let dy = Math.abs(y-cy);
-                let dl = Math.sqrt(dx * dx + dy * dy);
-                // 判断球和球之间是否碰撞
-                if(dl <= radius + ballC.radius) {
-                    const angel = Math.atan(dy / dx);
-                    if(x < cx) {
-                        ball.x -= Math.cos(angel) * 1;
-                        ballC.x += Math.cos(angel) * 1;
-                    } else {
-                        ball.x += Math.cos(angel) * 1;
-                        ballC.x -= Math.cos(angel) * 1;
-                    }
-                    if(y < cy) {
-                        ball.y -= Math.sin(angel) * 1;
-                        ballC.y += Math.sin(angel) * 1;
-                    } else {
-                        ball.y += Math.sin(angel) * 1;
-                        ballC.y -= Math.sin(angel) * 1;
-                    }
-                }
-
-            }
             // 判断球是否和边界碰撞 start
             if(!ball.angel) {
                 // debugger;
@@ -138,25 +111,52 @@ class BallPool extends canvasBase{
 
 
             // 判断球是否和边界碰撞 end
+            for(let c = i+1; c< len; c++) {
+                let ballC = this.BallList[c];
+                let cx = ballC.x,cy = ballC.y;
+                let dx = Math.abs(x-cx);
+                let dy = Math.abs(y-cy);
+                let dl = Math.sqrt(dx * dx + dy * dy);
+                // 判断球和球之间是否碰撞
+                if(dl <= radius + ballC.radius) {
+                    const angel = Math.atan(dy / dx);
+                    if(x < cx) {
+                        ball.x -= Math.cos(angel) * 1;
+                        ballC.x += Math.cos(angel) * 1;
+                    } else {
+                        ball.x += Math.cos(angel) * 1;
+                        ballC.x -= Math.cos(angel) * 1;
+                    }
+                    if(y < cy) {
+                        ball.y -= Math.sin(angel) * 1;
+                        ballC.y += Math.sin(angel) * 1;
+                    } else {
+                        ball.y += Math.sin(angel) * 1;
+                        ballC.y -= Math.sin(angel) * 1;
+                    }
+                }
+
+            }
+            
             this.ctx.beginPath();
             this.ctx.moveTo(x,y)
             this.ctx.arc(x,y,radius,0,Math.PI * 2);
             this.ctx.fillStyle = color;
             this.ctx.fill();
             this.ctx.closePath();
-            if(ball.angel) {
-                let offsetX = this.ballSpeed * Math.cos(this.boxAngel);
-                ball.x += ball.dir * offsetX;
-                
-            } 
-            if(ball.y <  (this.contextHeight + this.BOX_HEIGHT) / 2) {
+           
+            if(ball.y <  (this.contextHeight + this.BOX_HEIGHT) / 2 - radius) {
                 ball.y += this.ballSpeed;
-
+                if(ball.angel) {
+                    let offsetX = this.ballSpeed * Math.cos(this.boxAngel);
+                    ball.x += ball.dir * offsetX;
+                    
+                } 
             }
         }
         this.ballSpeed+=0.15;
-        if(this.ballSpeed > 4) {
-            this.ballSpeed = 4;
+        if(this.ballSpeed > 2) {
+            this.ballSpeed = 2;
         }
     }
     render(){
