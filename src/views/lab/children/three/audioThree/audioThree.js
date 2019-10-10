@@ -31,7 +31,7 @@ class audioThree extends ThreeBase{
        
         let light = new THREE.AmbientLight( 0x777777);
         this.scene.add( light );
-        let dirLight = new THREE.DirectionalLight( 0x523318);
+        let dirLight = new THREE.DirectionalLight( 0xeeeeee);
 		dirLight.position.set( 0, 20, -20 );
         dirLight.castShadow = true;
         this.scene.add( dirLight );

@@ -34,7 +34,9 @@ class ThreeBase{
 
        this.selfDom.appendChild(this.stats.dom);
        this.camera = new THREE.PerspectiveCamera(45,this.contextWidth/this.contextHeight,0.1,1000);
-       this.renderer = new THREE.WebGLRenderer();
+       this.renderer = new THREE.WebGLRenderer({
+           antialias: true
+       });
        this.renderer.setSize(this.contextWidth,this.contextHeight);
        this.selfDom.appendChild(this.renderer.domElement);
 
