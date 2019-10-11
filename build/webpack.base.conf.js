@@ -1,3 +1,12 @@
+/*
+ * @Author: gaigai
+ * @Date: 2019-07-24 09:19:53
+ * @LastEditors: gaigai
+ * @LastEditTime: 2019-07-24 09:19:53
+ * @Description: 
+ * @Email: 1054257376@qq.com
+ * @habit: carton girl
+ */
 'use strict'
 const path = require('path')
 const utils = require('./utils')
@@ -31,6 +40,15 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.(js|vue)$/,
+        loader: 'eslint-loader',
+        enforce: 'pre',
+        include: [resolve('src'), resolve('test')],
+        options: {
+            formatter: require('eslint-friendly-formatter')
+        }
+      },
       {
         test: /\.vue$/,
         loader: 'vue-loader',

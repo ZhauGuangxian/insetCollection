@@ -1,3 +1,12 @@
+/*
+ * @Author: gaigai
+ * @Date: 2019-07-24 09:19:53
+ * @LastEditors: gaigai
+ * @LastEditTime: 2019-10-11 19:31:48
+ * @Description: 
+ * @Email: 1054257376@qq.com
+ * @habit: carton girl
+ */
 
 import ThreeBase from '../threeBase.js';
 import { BloomEffect } from '../bloomEffect';
@@ -121,19 +130,16 @@ class audioThree extends ThreeBase{
         
     }
     drawBar(){
-            this.dataArray = new Uint8Array(this.bufferLength);
-            this.analyser.getByteFrequencyData(this.dataArray);
-            let bars = this.scene.getObjectByName('bars');
-            //let lines = this.scene.getObjectByName('barLines');
-            for (let i = 0; i < this.bufferLength; i++) {
-                let barHeight = this.dataArray[i]/10 +0.5;
-                let mesh = bars.children[i];
-                //let mesh2 = lines.children[i];
-                mesh.scale.y = barHeight;
-            }
-        
-        
-        
+        this.dataArray = new Uint8Array(this.bufferLength);
+        this.analyser.getByteFrequencyData(this.dataArray);
+        let bars = this.scene.getObjectByName('bars');
+        //let lines = this.scene.getObjectByName('barLines');
+        for (let i = 0; i < this.bufferLength; i++) {
+            let barHeight = this.dataArray[i]/10 +0.5;
+            let mesh = bars.children[i];
+            //let mesh2 = lines.children[i];
+            mesh.scale.y = barHeight;
+        }
     }
 }
 
