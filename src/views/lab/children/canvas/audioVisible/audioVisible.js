@@ -246,6 +246,13 @@ class autioVisible extends canvasBase{
                         this.audio = null;
                         
                 }
+                this.audioCtx = null;
+                this.analyser = null;
+                this.firstLoadPic = true;
+                this.audio = null;
+                this.sourceNode = null;
+                this.bufferLength = null;
+                
         }
         async getOnlineBuffer(url,type='switch',callback){
                 if(type === 'switch'){
@@ -290,10 +297,7 @@ class autioVisible extends canvasBase{
                 this.ctx.lineWidth = 1;
                 this.ctx.strokeStyle = this.options.color || '#00a1d6';
                 this.count++;
-                if(this.count % 30 == 0){
-
-                        console.log(dataArray);
-                }
+              
                 this.ctx.beginPath();
               
                 let sliceWidth = this.contextWidth * 1.0 / this.bufferLength;

@@ -11,6 +11,7 @@ import canvasBase from '../canvaseBase';
 class BallPool extends canvasBase {
   constructor(node, options) {
     super(node, options);
+    console.log(options)
     this.BallList = [];
     this.BOX_WIDTH = 200;
     this.BOX_HEIGHT = 400;
@@ -86,7 +87,7 @@ class BallPool extends canvasBase {
                     // 圆心到边界的距离
           let dis2 = dis * Math.sin(angelL);
           if (dis2 < radius) {
-            ball.angel = angelL;
+            ball.angel = this.boxAngel;
             ball.dir = 1;
           }
         }
@@ -100,39 +101,39 @@ class BallPool extends canvasBase {
                     // 圆心到边界的距离
           let dis2 = dis * Math.sin(angelL);
           if (dis2 < radius) {
-            ball.angel = angelL;
+            ball.angel = this.boxAngel;
             ball.dir = -1;
           }
         }
       }
 
 
-            // 判断球是否和边界碰撞 end
-      for (let c = i + 1; c < len; c++) {
-        let ballC = this.BallList[c];
-        let cx = ballC.x, cy = ballC.y;
-        let dx = Math.abs(x - cx);
-        let dy = Math.abs(y - cy);
-        let dl = Math.sqrt(dx * dx + dy * dy);
-                // 判断球和球之间是否碰撞
-        if (dl <= radius + ballC.radius) {
-          const angel = Math.atan(dy / dx);
-          if (x < cx) {
-            ball.x -= Math.cos(angel) * 1;
-            ballC.x += Math.cos(angel) * 1;
-          } else {
-            ball.x += Math.cos(angel) * 1;
-            ballC.x -= Math.cos(angel) * 1;
-          }
-          if (y < cy) {
-            ball.y -= Math.sin(angel) * 1;
-            ballC.y += Math.sin(angel) * 1;
-          } else {
-            ball.y += Math.sin(angel) * 1;
-            ballC.y -= Math.sin(angel) * 1;
-          }
-        }
-      }
+      //       // 判断球是否和边界碰撞 end
+      // for (let c = i + 1; c < len; c++) {
+      //   let ballC = this.BallList[c];
+      //   let cx = ballC.x, cy = ballC.y;
+      //   let dx = Math.abs(x - cx);
+      //   let dy = Math.abs(y - cy);
+      //   let dl = Math.sqrt(dx * dx + dy * dy);
+      //           // 判断球和球之间是否碰撞
+      //   if (dl <= radius + ballC.radius) {
+      //     const angel = Math.atan(dy / dx);
+      //     if (x < cx) {
+      //       ball.x -= Math.cos(angel) * 1;
+      //       ballC.x += Math.cos(angel) * 1;
+      //     } else {
+      //       ball.x += Math.cos(angel) * 1;
+      //       ballC.x -= Math.cos(angel) * 1;
+      //     }
+      //     if (y < cy) {
+      //       ball.y -= Math.sin(angel) * 1;
+      //       ballC.y += Math.sin(angel) * 1;
+      //     } else {
+      //       ball.y += Math.sin(angel) * 1;
+      //       ballC.y -= Math.sin(angel) * 1;
+      //     }
+      //   }
+      // }
 
       this.ctx.beginPath();
       this.ctx.moveTo(x, y);
@@ -158,6 +159,12 @@ class BallPool extends canvasBase {
     super.render();
     this.renderBox();
     this.renderBalls();
+  }
+  reset(){
+    this.BallList = [];
+    this.ballSpeed = 1;
+   
+    super.reset();
   }
 }
 

@@ -33,6 +33,7 @@ export default {
         beforeDestroy(){
                 if(this.canvasEntity){
                         this.canvasEntity.close();
+                        this.canvasEntity
                 }
                 window.removeEventListener('resize', this.handleResize);
         },

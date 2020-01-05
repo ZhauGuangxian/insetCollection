@@ -18,8 +18,8 @@ class canvasBase{
         this.contextHeight = 0;
         this.contextWidth = 0;
         if(options){
-
-            let {height,width} = this.options = options;
+            this.options = options;
+            let {height,width} = options;
             if(height && typeof height == 'number'){
                 this.contextHeight = height;
             }
@@ -63,8 +63,7 @@ class canvasBase{
             this.options = options;
         }
         this.stopRender();
-        this.canvas.remove();
-        this.ctx = null;
+        
         this.init()
     }
     init(){
