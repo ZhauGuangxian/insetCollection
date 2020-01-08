@@ -39,7 +39,8 @@ class BallPool extends canvasBase {
         startX,
         startY,
         x: startX,
-        y: startY
+        y: startY,
+        down: false
       };
       this.BallList.push(item);
     }
@@ -68,6 +69,45 @@ class BallPool extends canvasBase {
     this.ctx.stroke();
     this.ctx.closePath();
   }
+  judgeOut(x,y,radius) {
+    if((x > this.boxLT.x && x < this.boxLB.x) || (x > this.boxLT.x && x < this.boxLB.x)){
+      let dx = Math.abs(x - this.boxLB.x);
+      if (x > this.boxLT.x && x < this.boxLB.x) {
+        dx =  Math.abs(x - this.boxRB.x);
+      }
+      let dy = Math.abs(y - this.boxLB.y);
+      let angelL = Math.atan(dy / dx);
+                // 长边的长
+      let dis = Math.sqrt(dx * dx + dy * dy);
+      angelL = Math.abs(this.boxAngel - angelL);
+                // 圆心到边界的距离
+      let dis2 = dis * Math.sin(angelL);
+      if (dis2 < radius) {
+        return true;
+      }
+    }
+    
+    if(y + radius >= this.boxLB.y - this.boxLT.y) {
+      return true;
+    }
+
+    return false;
+  }
+  backFromOut(ball) {
+    debugger;
+    let {x,y,radius,angel} = ball;
+    // srtan_x, stand_y 桶两边的标准x,y
+    const stand_y = this.boxLB.y - y;
+    let stand_x;
+    // 左边
+    if(x < this.contextWidth/2) {
+      stand_x = this.boxLB.x - stand_y / Math.tan(angel);
+      x = radius*Math.cos(angel) + stand_x;
+    } else {
+      stand_x = this.boxRB.x + stand_y / Math.tan(angel);
+      x = stand_x -  radius*Math.cos(angel);
+    }
+  }
   renderBalls() {
     let len = this.BallList.length;
     for (let i = 0; i < len; i++) {
@@ -78,7 +118,7 @@ class BallPool extends canvasBase {
       if (!ball.angel) {
                 // debugger;
         if (x > this.boxLT.x && x < this.boxLB.x) { // 在左边
-          let dx = Math.abs(x - this.boxLT.x);
+          let dx = Math.abs(x - this.boxLB.x);
           let dy = Math.abs(y - this.boxLB.y);
           let angelL = Math.atan(dy / dx);
                     // 长边的长
@@ -92,7 +132,7 @@ class BallPool extends canvasBase {
           }
         }
         if (x > this.boxRB.x && x < this.boxRT.x) { // 在右边
-          let dx = Math.abs(this.boxRT.x - x);
+          let dx = Math.abs(this.boxRB.x - x);
           let dy = Math.abs(y - this.boxRB.y);
           let angelL = Math.atan(dy / dx);
                     // 长边的长
@@ -106,34 +146,85 @@ class BallPool extends canvasBase {
           }
         }
       }
+      
 
+            // 判断球是否和边界碰撞 end
+      for (let c = i + 1; c < len; c++) {
+        let ballC = this.BallList[c];
+        let cx = ballC.x, cy = ballC.y;
+        let dx = Math.abs(x - cx);
+        let dy = Math.abs(y - cy);
+        let dl = Math.sqrt(dx * dx + dy * dy);
+        const ballOut = this.judgeOut(ball.c, ball.y, ball.radius);
+        const ballCOut = this.judgeOut(ballC.c, ballC.y, ballC.radius)
+                // 判断球和球之间是否碰撞
+        if (dl <= radius + ballC.radius) {
+          const angel = Math.atan(dy / dx);
+          if (x < cx) {
 
-      //       // 判断球是否和边界碰撞 end
-      // for (let c = i + 1; c < len; c++) {
-      //   let ballC = this.BallList[c];
-      //   let cx = ballC.x, cy = ballC.y;
-      //   let dx = Math.abs(x - cx);
-      //   let dy = Math.abs(y - cy);
-      //   let dl = Math.sqrt(dx * dx + dy * dy);
-      //           // 判断球和球之间是否碰撞
-      //   if (dl <= radius + ballC.radius) {
-      //     const angel = Math.atan(dy / dx);
-      //     if (x < cx) {
-      //       ball.x -= Math.cos(angel) * 1;
-      //       ballC.x += Math.cos(angel) * 1;
-      //     } else {
-      //       ball.x += Math.cos(angel) * 1;
-      //       ballC.x -= Math.cos(angel) * 1;
-      //     }
-      //     if (y < cy) {
-      //       ball.y -= Math.sin(angel) * 1;
-      //       ballC.y += Math.sin(angel) * 1;
-      //     } else {
-      //       ball.y += Math.sin(angel) * 1;
-      //       ballC.y -= Math.sin(angel) * 1;
-      //     }
-      //   }
-      // }
+              if(ballOut===false){
+                ball.x -= Math.cos(angel) * 1;
+              } else {
+                this.backFromOut(ball)
+              }
+              if(ballCOut === false ) {
+                ballC.x += Math.cos(angel) * 1;
+              } else {
+                this.backFromOut(ballC)
+              }
+            
+          } else {
+            if(ballOut===false){
+              ball.x += Math.cos(angel) * 1;
+
+            } else {
+              this.backFromOut(ball)
+            }
+            if(ballCOut === false ) {
+              ballC.x -= Math.cos(angel) * 1;
+            } else {
+              this.backFromOut(ballC)
+            }
+
+              // ball.x += Math.cos(angel) * 1;
+
+              // ballC.x -= Math.cos(angel) * 1;
+
+          }
+          if (y < cy) {
+            if(ballOut===false){
+              ball.y -= Math.sin(angel) * 1;
+            } else {
+              this.backFromOut(ball)
+            }
+            if(ballCOut === false ) {
+              ballC.y += Math.sin(angel) * 1;
+            } else {
+              this.backFromOut(ballC)
+            }
+
+              // ball.y -= Math.sin(angel) * 1;
+      
+              // ballC.y += Math.sin(angel) * 1;
+        
+          } else {
+            if(ballOut===false){
+              ball.y += Math.sin(angel) * 1
+            } else {
+              this.backFromOut(ball)
+            }
+            if(ballCOut === false ) {
+              ballC.y -= Math.sin(angel) * 1;
+            } else {
+              this.backFromOut(ballC)
+            }
+              // ball.y += Math.sin(angel) * 1;
+
+              // ballC.y -= Math.sin(angel) * 1;
+          
+          }
+        }
+      }
 
       this.ctx.beginPath();
       this.ctx.moveTo(x, y);
@@ -148,11 +239,13 @@ class BallPool extends canvasBase {
           let offsetX = this.ballSpeed * Math.cos(this.boxAngel);
           ball.x += ball.dir * offsetX;
         }
+      } else {
+        ball.done = true;
       }
     }
     this.ballSpeed += 0.15;
-    if (this.ballSpeed > 2) {
-      this.ballSpeed = 2;
+    if (this.ballSpeed > 3) {
+      this.ballSpeed = 3;
     }
   }
   render() {
