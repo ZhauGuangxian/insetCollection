@@ -2,7 +2,7 @@
  * @Author: gaigai
  * @Date: 2019-07-24 09:19:53
  * @LastEditors  : gaigai
- * @LastEditTime : 2020-09-20 11:00:07
+ * @LastEditTime : 2020-09-24 19:17:42
  * @Description:
  * @Email: 1054257376@qq.com
  * @habit: carton girl
@@ -277,8 +277,9 @@ class autioVisible extends canvasBase {
     this.Type = Type;
   }
   close() {
+    playingNode.stop(this.audioCtx.currentTime + 1);
     if (this.online === true) {
-      delete this;
+      playingNode = null;
       this.sourceNode = null;
     } else {
       this.audio = null;
