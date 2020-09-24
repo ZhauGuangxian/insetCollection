@@ -19,7 +19,6 @@
   </div>
 </template>
 
-
 <script>
 import { debounce } from "@/utils/index.js";
 import { Select, Option, Button } from "element-ui";
@@ -30,7 +29,7 @@ export default {
   components: {
     "el-select": Select,
     "el-button": Button,
-    "el-option": Option,
+    "el-option": Option
   },
   beforeDestroy() {
     if (this.canvasEntity) {
@@ -48,22 +47,22 @@ export default {
       options: [
         {
           value: "line",
-          label: "line",
+          label: "line"
         },
         {
           value: "bar",
-          label: "bar",
+          label: "bar"
         },
         {
           value: "roundBar",
-          label: "roundBar",
+          label: "roundBar"
         },
         {
           value: "crystal",
-          label: "crystal",
-        },
+          label: "crystal"
+        }
       ],
-      Type: "line",
+      Type: "line"
     };
   },
   mounted() {
@@ -83,7 +82,7 @@ export default {
 
           this.canvasEntity = new audionVisible(target, {
             audioNode: audio,
-            Type: this.Type,
+            Type: this.Type
           });
           this.canvasEntity.init();
         }
@@ -97,8 +96,8 @@ export default {
       if (this.canvasEntity) {
         this.canvasEntity.changeType(val);
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

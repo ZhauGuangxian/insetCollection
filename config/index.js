@@ -2,7 +2,7 @@
  * @Author: gaigai
  * @Date: 2019-07-24 09:19:53
  * @LastEditors  : gaigai
- * @LastEditTime : 2020-09-20 11:40:28
+ * @LastEditTime : 2020-09-24 19:42:36
  * @Description:
  * @Email: 1054257376@qq.com
  * @habit: carton girl
@@ -82,6 +82,39 @@ module.exports = {
     // View the bundle analyzer report after build finishes:
     // `npm run build --report`
     // Set to `true` or `false` to always turn it on or off
-    bundleAnalyzerReport: process.env.npm_config_report
+    bundleAnalyzerReport: process.env.npm_config_report,
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          vendor: {
+            chunks: "all",
+            test: /node_modules/,
+            name: "vendor",
+            minChunks: 1,
+            maxInitialRequests: 5,
+            minSize: 0,
+            priority: 100
+          },
+          common: {
+            chunks: "all",
+            test: /[\\/]src[\\/]js[\\/]/,
+            name: "common",
+            minChunks: 2,
+            maxInitialRequests: 5,
+            minSize: 0,
+            priority: 60
+          },
+          styles: {
+            name: "styles",
+            test: /\.(sa|sc|c)ss$/,
+            chunks: "all",
+            enforce: true
+          },
+          runtimeChunk: {
+            name: "manifest"
+          }
+        }
+      }
+    }
   }
 };
