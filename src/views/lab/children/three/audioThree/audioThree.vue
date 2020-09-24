@@ -19,7 +19,6 @@
   </div>
 </template>
 
-
 <script>
 import { Select, Option, Button } from "element-ui";
 import testAudio from "@/assets/test.mp3";
@@ -29,7 +28,7 @@ export default {
   components: {
     "el-select": Select,
     "el-button": Button,
-    "el-option": Option,
+    "el-option": Option
   },
   beforeDestroy() {
     this.$data.threeEntity.close();
@@ -42,22 +41,22 @@ export default {
       options: [
         {
           value: "line",
-          label: "line",
+          label: "line"
         },
         {
           value: "bar",
-          label: "bar",
+          label: "bar"
         },
         {
           value: "roundBar",
-          label: "roundBar",
+          label: "roundBar"
         },
         {
           value: "crystal",
-          label: "crystal",
-        },
+          label: "crystal"
+        }
       ],
-      Type: "line",
+      Type: "line"
     };
   },
   mounted() {
@@ -68,9 +67,9 @@ export default {
       target: context,
       audioNode,
       dev: true,
-      background: 0xcce0ff,
+      background: 0xcce0ff
     });
-    window.t = this.$data.threeEntity;
+
     this.$data.threeEntity.init();
   },
   watch: {
@@ -81,8 +80,8 @@ export default {
       } else {
         audio.pause();
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

@@ -1,164 +1,167 @@
 <!--
  * @Author: gaigai
  * @Date: 2019-07-24 09:19:53
- * @LastEditTime : 2020-09-24 19:50:18
+ * @LastEditTime : 2020-09-24 20:29:13
  * @Description: 
  * @Email: 1054257376@qq.com
  * @habit: carton girl
  -->
 <template>
-' <div clas'"audioOnline" ref="main">
+  <div class="audioOnline" ref="main">
     <div class="left">
       <div class="playList">
-        <div class="songTitle">网易云歌单：~Perfume~po主觉得软就够了！￣へ￣</div>
-        <div class="s'ng" '-or="song in playList" :key="song.id">
+        <div class="songTitle">
+          网易云歌单：~Perfume~po主觉得软就够了！￣へ￣
+        </div>
+        <div class="song" v-for="song in playList" :key="song.id">
           <span @click.self="playSong(song)">{{ song.name }}</span>
         </div>
       </div>
     </div>
-    <div class="right">''
-      <p>''
+    <div class="right">
+      <p>
         audioOnline effect
-      ' <el'button @click="running = !running">播放/暂停</el-button>
-      </p>''
+        <el-button @click="running = !running">播放/暂停</el-button>
+      </p>
 
-      <div>''''
+      <div>
         <el-select v-model="Type">
-      '   <el-op'ion
-            v-fo'="item in options"'
+          <el-option
+            v-for="item in options"
             :key="item.value"
-            :value="ite'.value"'''
+            :value="item.value"
             :label="item.label"
           ></el-option>
         </el-select>
+
+        <div class="drawContext" ref="context"></div>
+        <img :src="picUrl" alt style="width:200px;height:200px" />
       </div>
-''
-      <div class="drawContext" ref="context"></div>
-      <img :src="picUrl" alt style="width:200px;height:200px" />
     </div>
   </div>
 </template>
 
 <script>
-import { Select, Option, Button, Loading } from 'element-ui'
-import request from '@/utils/request'
-import audionVisible from './audioVisible.js'
-import { fetchGet } from '@/js/fetch.js'
-export defaul' {'
-  name: 'audioOnline',
+import { Select, Option, Button, Loading } from "element-ui";
+import request from "@/utils/request";
+import audionVisible from "./audioVisible.js";
+import { fetchGet } from "@/js/fetch.js";
+export default {
+  name: "audioOnline",
   components: {
-    'el-select': Select,
-    'el-button': Button,
-    'el-option': Option
+    "el-select": Select,
+    "el-button": Button,
+    "el-option": Option
   },
-  beforeDestroy () {
+  beforeDestroy() {
     if (this.canvasEntity) {
-      this.canvasEntity.close()
+      this.canvasEntity.close();
     }
   },
-  data () {''
+  data() {
     return {
       playList: [],
-      canvasEntity: null,''
-      running: true,''
-      audioInit: false''
+      canvasEntity: null,
+      running: true,
+      audioInit: false,
       onlineAudioNotInt: true,
       onlineLoading: false,
-      picUrl: '',
+      picUrl: "",
       options: [
         {
-          value: 'line',
-          label: 'line'
-        },''
-        {
-          value: 'bar',
-          label: 'bar'
+          value: "line",
+          label: "line"
         },
         {
-          value: 'roundBar',
-          label: 'roundBar'''''
+          value: "bar",
+          label: "bar"
         },
         {
-          value: 'crystal',
-          label: 'crystal'
+          value: "roundBar",
+          label: "roundBar"
+        },
+        {
+          value: "crystal",
+          label: "crystal"
         }
       ],
-      Type: 'line'
-    }
+      Type: "line"
+    };
   },
-  mounted () {
-    let target = thi'.$r'fs.context
+  mounted() {
+    let target = this.$refs.context;
     this.canvasEntity = new audionVisible(target, {
-      online: true''
+      online: true,
       Type: this.Type
-    })
-    this.canvasEntity.init()
+    });
+    this.canvasEntity.init();
     // PERFUME歌单
     request({
       withCredentials: true,
-      method: 'GET',''
-      url: '/musicapi/playlist/detail?id=2650020'
-    }).then((resul') => {'
+      method: "GET",
+      url: "/musicapi/playlist/detail?id=2650020"
+    }).then(result => {
       if (result && result.playlist) {
-        this.playList = result.playlist.tracks
-        console.log(this.playList)
+        this.playList = result.playlist.tracks;
+        console.log(this.playList);
       }
-    })
+    });
 
     // audio.play(';'
   },
-  methods: {''
-    async playSong (song) {
-      let { id } = song
-      let url = `/musicapi/song/url?id=${id}&br=128000`
-      let picUrl ='(song.al'|| {}).picUrl
-      this.$set(this, 'picUrl', picUrl)
-      const newOptions = { online: true, Type: this.Type }
+  methods: {
+    async playSong(song) {
+      let { id } = song;
+      let url = `/musicapi/song/url?id=${id}&br=128000`;
+      let picUrl = (song.al || {}).picUrl;
+      this.$set(this, "picUrl", picUrl);
+      const newOptions = { online: true, Type: this.Type };
 
-      let mp3Obj = await fetchGet(url)
+      let mp3Obj = await fetchGet(url);
       if (mp3Obj.data instanceof Array && mp3Obj.data.length > 0) {
-       let bufferUrl = mp3Obj.data[0].url;
+        let bufferUrl = mp3Obj.data[0].url;
         if (!bufferUrl) {
-          alert('该单曲可能不是免费的')
-          this.running = false
+          alert("该单曲可能不是免费的");
+          this.running = false;
         } else {
-          this.canvasEntity.reset(newOptions)
+          this.canvasEntity.reset(newOptions);
           let loadingInstance = Loading.service({
             body: true,
-            text: '音频加载中'
-          })
+            text: "音频加载中"
+          });
           if (this.onlineAudioNotInt === true) {
-            this.canvasEntity.getOnlineBuffer(bufferUrl, 'init', () => {
-              loadingInstance.close()
-            })
-            this.onlineAudioNotInt = null
+            this.canvasEntity.getOnlineBuffer(bufferUrl, "init", () => {
+              loadingInstance.close();
+            });
+            this.onlineAudioNotInt = null;
           } else {
-            this.canvasEntity.getOnlineBuffer(bufferUrl, 'switch', () => {
-              loadingInstance.close()
-            })
+            this.canvasEntity.getOnlineBuffer(bufferUrl, "switch", () => {
+              loadingInstance.close();
+            });
           }
+          this.running = true;
         }
       }
     }
   },
   watch: {
-    running (val, oldval) {
+    running(val, oldval) {
       if (this.canvasEntity) {
         if (val === true) {
-          this.canvasEntity.play()
+          this.canvasEntity.play();
         } else {
-          this.canvasEntity.stop()
+          this.canvasEntity.stop();
         }
       }
     },
-    Type (val, oldval) {
-      let audio = this.$refs.audio
+    Type(val, oldval) {
+      let audio = this.$refs.audio;
       if (this.canvasEntity) {
-        this.canvasEntity.changeType(val)
+        this.canvasEntity.changeType(val);
       }
     }
   }
-}
+};
 </script>
 
 <style scoped lang="less">
